@@ -10,6 +10,7 @@ def main():
         im1 = cv2.imread(session_images[i])
         im2 = cv2.imread(session_images[i+1])
         diff = cv2.absdiff(im1, im2)
+        cv2.imwrite("demos/demo" + str(i) + ".jpg", diff)
         cv2.imshow("Difference ", diff)
         cv2.waitKey(0)
 
