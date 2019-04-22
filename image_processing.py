@@ -3,7 +3,8 @@ import imutils
 import cv2
 import numpy as np
 
-MIN_CNT_SIZE = 50
+MIN_CNT_SIZE = 30
+DIFFERENCE_THRESHOLD = 150
 
 # Diff methods get 2 images as input, and output the diff matrix
 
@@ -16,39 +17,60 @@ def diff_method1(im1, im2):
     # images, ensuring that the difference image is returned
     (score, diff) = compare_ssim(grayA, grayB, full=True)
     diff = (diff * 255).astype("uint8")
+
+    diff = cv2.threshold(diff, DIFFERENCE_THRESHOLD, 255, cv2.THRESH_BINARY)[1]
+
+    cv2.imshow("Difference ", diff)
+    cv2.waitKey(0)
+
     return diff
 
 
 def diff_method2(im1, im2):
-    return cv2.absdiff(im1, im2)
+    diff = cv2.absdiff(im1, im2)
+    diff = cv2.threshold(diff, DIFFERENCE_THRESHOLD, 255, cv2.THRESH_BINARY_INV)[1]
+    diff = 255 - cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+    return diff
 
 
 def draw_rect_contours(img, cnts):
+    try:
+        img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+    except:
+        pass
+
     for c in cnts:
         # compute the bounding box of the contour and then draw the
         # bounding box on both input images to represent where the two
         # images differ
         (x, y, w, h) = cv2.boundingRect(c)
-        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
+        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
     return img
 
 
 def get_contours(diff):
     # threshold the difference image, followed by finding contours to
     # obtain the regions of the two input images that differ
-    thresh = cv2.threshold(diff, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
-    cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    # thresh = cv2.threshold(diff, 127, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+    cnts = cv2.findContours(diff.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     cnts = imutils.grab_contours(cnts)
 
     # loop over the contours
     final_cnts = [cnt for cnt in cnts if len(cnt) >= MIN_CNT_SIZE]
-    draw_rect_contours(diff, final_cnts)
-
-    return final_cnts, diff
+    return final_cnts
 
 
 # Compares two images regarding a certain contour
 def mse(im1, im2, normalization):
+    im1 = cv2.cvtColor(im1, cv2.COLOR_BGR2GRAY)
+    im2 = cv2.cvtColor(im2, cv2.COLOR_BGR2GRAY)
+
+    #cv2.imshow("Difference ", im1)
+    #cv2.waitKey(0)
+    #cv2.imshow("Difference ", im2)
+    #cv2.waitKey(0)
+
+
     # the 'Mean Squared Error' between the two images is the
     # sum of the squared difference between the two images;
     # NOTE: the two images must have the same dimension
