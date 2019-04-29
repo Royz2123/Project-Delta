@@ -1,6 +1,7 @@
 import cv2
 import os
 import random
+import time
 
 import image_processing
 
@@ -8,6 +9,7 @@ import image_processing
 DIFF_METHOD = 1
 MOVEMENT_THRESH = 0.7
 
+VIZ_MODE = 0
 
 def compare_cnts(cnt1, cnt2):
     equal_count = 0
@@ -57,7 +59,7 @@ class SuspiciousItem(object):
 
 
 
-def main():
+def run_session():
     session_path = "sessions/" + max(os.listdir("sessions/")) + "/"
     session_images = [session_path + path for path in sorted(os.listdir(session_path))]
 
@@ -99,10 +101,15 @@ def main():
         output2 = image_processing.draw_rect_contours(im2, curr_cnts)
 
         cv2.imwrite("demos/demo" + str(i) + ".jpg", output1)
-        cv2.imshow("Difference ", output1)
-        cv2.waitKey(0)
-        cv2.imshow("Difference ", output2)
-        cv2.waitKey(0)
+        cv2.imwrite("results/result.jpg", output1)
+
+        if VIZ_MODE:
+            cv2.imshow("Difference ", output1)
+            cv2.waitKey(0)
+            cv2.imshow("Difference ", output2)
+            cv2.waitKey(0)
+        else:
+            time.sleep(1)
 
     # output the final differences
     output = cv2.imread(session_images[0])
@@ -113,7 +120,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    run_session()
 
 
 """

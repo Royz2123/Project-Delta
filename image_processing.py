@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 MIN_CNT_SIZE = 30
-DIFFERENCE_THRESHOLD = 150
+DIFFERENCE_THRESHOLD = 100
 
 # Diff methods get 2 images as input, and output the diff matrix
 
