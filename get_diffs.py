@@ -56,7 +56,7 @@ def run_session(session=None, viz=True):
 
 
 if __name__ == "__main__":
-    run_session("indoor")
+    run_session("outdoor3")
 
 
 """

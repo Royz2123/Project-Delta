@@ -111,7 +111,7 @@ def display_binary_im(bin_im):
 def update_changes(mask, history, diff):
     # binarize diff, and erode and dialate
     diff[diff > 0] = 1
-    kernel = np.ones((5, 5), np.uint8)
+    kernel = np.ones((4, 4), np.uint8)
     diff = cv2.morphologyEx(diff, cv2.MORPH_OPEN, kernel)
     diff = cv2.morphologyEx(diff, cv2.MORPH_CLOSE, kernel)
 
