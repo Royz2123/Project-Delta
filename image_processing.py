@@ -30,6 +30,7 @@ def diff_method2(im1, im2):
     diff = cv2.absdiff(im1, im2)
     diff = cv2.threshold(diff, DIFFERENCE_THRESHOLD, 255, cv2.THRESH_BINARY_INV)[1]
     diff = 255 - cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+    diff[diff > 0] = 1
     return diff
 
 
@@ -109,8 +110,7 @@ def display_binary_im(bin_im):
     cv2.waitKey(0)
 
 def update_changes(mask, history, diff):
-    # binarize diff, and erode and dialate
-    diff[diff > 0] = 1
+    # diff erode and dialate
     kernel = np.ones((4, 4), np.uint8)
     diff = cv2.morphologyEx(diff, cv2.MORPH_OPEN, kernel)
     diff = cv2.morphologyEx(diff, cv2.MORPH_CLOSE, kernel)
@@ -139,7 +139,13 @@ def draw_changes(img, mask):
     img[mask > 0] = [0, 0, 255]
     return img
 
+def combine_masks(mask1, mask2):
+    return np.bitwise_or(mask1, mask2)
 
+
+def reliable_baseline(diff, percent=0.5):
+    height, width = diff.shape
+    return np.sum(diff) < percent * (height * width)
 
 DIFF_METHODS = [
     diff_method1,

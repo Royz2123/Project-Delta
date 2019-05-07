@@ -2,6 +2,7 @@ import cv2
 import os
 import random
 import time
+import numpy as np
 
 import image_processing
 
@@ -21,20 +22,32 @@ def run_session(session=None, viz=True):
     # create important databases
     baseline = cv2.imread(session_images[0])
     mask, history = image_processing.create_changes_dbs(baseline)
+    final_mask = mask.copy()
+    baseline_index = 0
 
     for i in range(1, len(session_images)):
-        baseline = cv2.imread(session_images[0])
+        baseline = cv2.imread(session_images[baseline_index])
         im = cv2.imread(session_images[i])
 
         # Call diff method
         diff = image_processing.DIFF_METHODS[DIFF_METHOD](baseline, im)
 
+        # Check if reliable diff
+        if not image_processing.reliable_baseline(diff):
+            print("Unreliable diff")
+            final_mask = image_processing.combine_masks(final_mask, mask)
+            mask, history = image_processing.create_changes_dbs(baseline)
+
+            # optimally, take another image immediately after
+            baseline_index = i
+            continue
+
         # update changes
         mask, history = image_processing.update_changes(mask, history, diff)
 
         # Draw all the contours on the map
-        output1 = image_processing.draw_changes(baseline, mask)
-        output2 = image_processing.draw_changes(im, mask)
+        output1 = image_processing.draw_changes(baseline, image_processing.combine_masks(final_mask, mask))
+        output2 = image_processing.draw_changes(im, image_processing.combine_masks(final_mask, mask))
 
         cv2.imwrite("demos/demo" + str(i) + ".jpg", output1)
         cv2.imwrite("results/result.jpg", output1)
@@ -49,14 +62,14 @@ def run_session(session=None, viz=True):
 
     # output the final differences
     output = cv2.imread(session_images[0])
-    output = image_processing.draw_changes(output, mask)
+    output = image_processing.draw_changes(output, image_processing.combine_masks(final_mask, mask))
     cv2.imwrite("demos/final.jpg", output)
     cv2.imshow("Output", output)
     cv2.waitKey(0)
 
 
 if __name__ == "__main__":
-    run_session("outdoor3")
+    run_session("indoor")
 
 
 """
