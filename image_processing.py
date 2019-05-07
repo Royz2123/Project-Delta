@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 MIN_CNT_SIZE = 30
-DIFFERENCE_THRESHOLD = 100
+DIFFERENCE_THRESHOLD = 50
 
 # Diff methods get 2 images as input, and output the diff matrix
 
@@ -65,12 +65,6 @@ def mse(im1, im2, normalization):
     im1 = cv2.cvtColor(im1, cv2.COLOR_BGR2GRAY)
     im2 = cv2.cvtColor(im2, cv2.COLOR_BGR2GRAY)
 
-    #cv2.imshow("Difference ", im1)
-    #cv2.waitKey(0)
-    #cv2.imshow("Difference ", im2)
-    #cv2.waitKey(0)
-
-
     # the 'Mean Squared Error' between the two images is the
     # sum of the squared difference between the two images;
     # NOTE: the two images must have the same dimension
@@ -101,6 +95,50 @@ def contour_stayed(im1, im2, cnt):
 
     similarity = mse(masks[0], masks[1], len(cnt))
     return similarity
+
+
+def create_changes_dbs(im):
+    height, width, depth = im.shape
+    return np.zeros((height, width), np.uint8), np.zeros((height, width), np.uint32)
+
+
+def display_binary_im(bin_im):
+    bin_im = bin_im.astype(np.uint8)
+    bin_im[bin_im > 0] = 255
+    cv2.imshow("Difference ", bin_im)
+    cv2.waitKey(0)
+
+def update_changes(mask, history, diff):
+    # binarize diff, and erode and dialate
+    diff[diff > 0] = 1
+    kernel = np.ones((5, 5), np.uint8)
+    diff = cv2.morphologyEx(diff, cv2.MORPH_OPEN, kernel)
+    diff = cv2.morphologyEx(diff, cv2.MORPH_CLOSE, kernel)
+
+    # get changes
+    stayed_changes = np.bitwise_and(mask, diff)
+    moved_changes = mask - diff
+
+    # binarize
+    stayed_changes[stayed_changes > 0] = 1
+    moved_changes[stayed_changes > 0] = 1
+
+    # add to history
+    history += stayed_changes
+    history -= moved_changes
+
+    # create mask based on history
+    new_mask = history.copy()
+    new_mask[new_mask > 0] = 1
+    new_mask[new_mask <= 0] = 0
+
+    display_binary_im(new_mask)
+    return new_mask, history
+
+def draw_changes(img, mask):
+    img[mask > 0] = [0, 0, 255]
+    return img
+
 
 
 DIFF_METHODS = [

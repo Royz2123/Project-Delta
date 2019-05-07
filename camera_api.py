@@ -1,12 +1,7 @@
 from arlo import Arlo
 import cv2
 
-from datetime import timedelta, date
-import datetime
-
-
-arlo = Arlo("doron.goldenberg.40@gmail.com","Surui12109")
-
+arlo = Arlo("royzohar25@gmail.com", "1Qazwsxdcv")
 
 # Get the list of devices and filter on device type to only get the camera.
 # This will return an array which includes all of the camera's associated metadata.
@@ -24,6 +19,8 @@ def get_snapshot():
     # This snapshot is not instantaneous, so this method waits for the response and returns the url
     # for the snapshot, which is stored on the Amazon AWS servers.
     snapshot_url = arlo.TriggerFullFrameSnapshot(basestations[0], cameras[0])
+
+    print(snapshot_url)
 
     arlo.DownloadSnapshot(snapshot_url, 'temp.jpg')
     img = cv2.imread('temp.jpg')
