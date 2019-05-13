@@ -7,7 +7,7 @@ import numpy as np
 import image_processing
 
 
-DIFF_METHOD = 1
+DIFF_METHOD = 0
 
 
 def run_session(session=None, viz=True):

@@ -4,25 +4,29 @@ import cv2
 import numpy as np
 
 MIN_CNT_SIZE = 30
-DIFFERENCE_THRESHOLD = 50
+DIFFERENCE_THRESHOLD = 70
+BACK_SUB = cv2.bgsegm.createBackgroundSubtractorLSBP()
+BACK_SUB = cv2.createBackgroundSubtractorMOG2()
+BACK_SUB = cv2.bgsegm.createBackgroundSubtractorMOG()
 
 # Diff methods get 2 images as input, and output the diff matrix
 
 def diff_method1(im1, im2):
-    # convert the images to grayscale
-    grayA = cv2.cvtColor(im1, cv2.COLOR_BGR2GRAY)
-    grayB = cv2.cvtColor(im2, cv2.COLOR_BGR2GRAY)
+    edges1 = cv2.Canny(im1, 100, 200)
+    edges2 = cv2.Canny(im2, 100, 200)
 
-    # compute the Structural Similarity Index (SSIM) between the two
-    # images, ensuring that the difference image is returned
-    (score, diff) = compare_ssim(grayA, grayB, full=True)
-    diff = (diff * 255).astype("uint8")
+    kernel = np.ones((5, 5), np.uint8)
+    edges1 = cv2.dilate(edges1, kernel)
+    edges2 = cv2.dilate(edges2, kernel)
 
-    diff = cv2.threshold(diff, DIFFERENCE_THRESHOLD, 255, cv2.THRESH_BINARY)[1]
+    diff = np.bitwise_and(~edges1, edges2)
+    #kernel = np.ones((3, 3), np.uint8)
+    #diff = cv2.morphologyEx(diff, cv2.MORPH_CLOSE, kernel)
 
-    cv2.imshow("Difference ", diff)
+    cv2.imshow("Test", diff)
     cv2.waitKey(0)
 
+    diff[diff > 0] = 1
     return diff
 
 
@@ -32,6 +36,16 @@ def diff_method2(im1, im2):
     diff = 255 - cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
     diff[diff > 0] = 1
     return diff
+
+
+def diff_method3(im1, im2):
+    im2 = cv2.cvtColor(im2, cv2.COLOR_BGR2GRAY)
+    im2 = cv2.equalizeHist(im2)
+    im2 = cv2.GaussianBlur(im2, (5, 5), 0)
+    fgmask = BACK_SUB.apply(im2)
+    cv2.imshow("Difference ", fgmask)
+    cv2.waitKey(0)
+    return fgmask
 
 
 def draw_rect_contours(img, cnts):
@@ -100,7 +114,7 @@ def contour_stayed(im1, im2, cnt):
 
 def create_changes_dbs(im):
     height, width, depth = im.shape
-    return np.zeros((height, width), np.uint8), np.zeros((height, width), np.uint32)
+    return np.zeros((height, width), np.uint8), np.zeros((height, width), np.int32)
 
 
 def display_binary_im(bin_im):
@@ -109,12 +123,14 @@ def display_binary_im(bin_im):
     cv2.imshow("Difference ", bin_im)
     cv2.waitKey(0)
 
+
 def update_changes(mask, history, diff):
     # diff erode and dialate
     kernel = np.ones((4, 4), np.uint8)
     diff = cv2.morphologyEx(diff, cv2.MORPH_OPEN, kernel)
     diff = cv2.morphologyEx(diff, cv2.MORPH_CLOSE, kernel)
 
+    """
     # get changes
     stayed_changes = np.bitwise_and(mask, diff)
     moved_changes = mask - diff
@@ -122,10 +138,19 @@ def update_changes(mask, history, diff):
     # binarize
     stayed_changes[stayed_changes > 0] = 1
     moved_changes[stayed_changes > 0] = 1
-
+    moved_changes[moved_changes < 0] = 0
+    
     # add to history
     history += stayed_changes
     history -= moved_changes
+    """
+
+    # add to history
+    history[diff == 0] -= 1
+    history[np.bitwise_and(diff == 1, history < 0)] = 0
+    history[diff == 1] += 1
+
+    print(np.amin(history))
 
     # create mask based on history
     new_mask = history.copy()
@@ -142,12 +167,12 @@ def draw_changes(img, mask):
 def combine_masks(mask1, mask2):
     return np.bitwise_or(mask1, mask2)
 
-
-def reliable_baseline(diff, percent=0.5):
+def reliable_baseline(diff, percent=np.inf):
     height, width = diff.shape
     return np.sum(diff) < percent * (height * width)
 
 DIFF_METHODS = [
     diff_method1,
-    diff_method2
+    diff_method2,
+    diff_method3
 ]
