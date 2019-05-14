@@ -18,9 +18,11 @@ def get_snapshot():
     # Tells the Arlo basestation to trigger a snapshot on the given camera.
     # This snapshot is not instantaneous, so this method waits for the response and returns the url
     # for the snapshot, which is stored on the Amazon AWS servers.
-    snapshot_url = arlo.TriggerFullFrameSnapshot(basestations[0], cameras[0])
 
-    print(snapshot_url)
+    while True:
+        snapshot_url = arlo.TriggerFullFrameSnapshot(basestations[0], cameras[0])
+        if snapshot_url is not None:
+            break
 
     arlo.DownloadSnapshot(snapshot_url, 'temp.jpg')
     img = cv2.imread('temp.jpg')

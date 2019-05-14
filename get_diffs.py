@@ -7,7 +7,13 @@ import numpy as np
 import image_processing
 
 
-DIFF_METHOD = 0
+DIFF_METHODS = [
+    image_processing.diff_method1,
+    image_processing.diff_method2,
+    image_processing.diff_method3
+]
+
+DIFF_METHOD = 2
 
 
 def run_session(session=None, viz=True):
@@ -30,7 +36,7 @@ def run_session(session=None, viz=True):
         im = cv2.imread(session_images[i])
 
         # Call diff method
-        diff = image_processing.DIFF_METHODS[DIFF_METHOD](baseline, im)
+        diff = DIFF_METHODS[DIFF_METHOD](baseline, im)
 
         # Check if reliable diff
         if not image_processing.reliable_baseline(diff):
@@ -69,7 +75,7 @@ def run_session(session=None, viz=True):
 
 
 if __name__ == "__main__":
-    run_session("indoor")
+    run_session("outdoor2")
 
 
 """

@@ -7,21 +7,26 @@ MIN_CNT_SIZE = 30
 DIFFERENCE_THRESHOLD = 70
 BACK_SUB = cv2.bgsegm.createBackgroundSubtractorLSBP()
 BACK_SUB = cv2.createBackgroundSubtractorMOG2()
-BACK_SUB = cv2.bgsegm.createBackgroundSubtractorMOG()
+# BACK_SUB = cv2.bgsegm.createBackgroundSubtractorMOG()
+
+EDGE_THICKNESS = 6
 
 # Diff methods get 2 images as input, and output the diff matrix
+
 
 def diff_method1(im1, im2):
     edges1 = cv2.Canny(im1, 100, 200)
     edges2 = cv2.Canny(im2, 100, 200)
 
-    kernel = np.ones((5, 5), np.uint8)
+    kernel = np.ones((EDGE_THICKNESS, EDGE_THICKNESS), np.uint8)
     edges1 = cv2.dilate(edges1, kernel)
     edges2 = cv2.dilate(edges2, kernel)
 
     diff = np.bitwise_and(~edges1, edges2)
-    #kernel = np.ones((3, 3), np.uint8)
-    #diff = cv2.morphologyEx(diff, cv2.MORPH_CLOSE, kernel)
+
+    # clean noises
+    kernel = np.ones((EDGE_THICKNESS - 1, EDGE_THICKNESS - 1), np.uint8)
+    diff = cv2.morphologyEx(diff, cv2.MORPH_OPEN, kernel)
 
     cv2.imshow("Test", diff)
     cv2.waitKey(0)
@@ -146,11 +151,9 @@ def update_changes(mask, history, diff):
     """
 
     # add to history
-    history[diff == 0] -= 1
+    history[diff == 0] -= 2
     history[np.bitwise_and(diff == 1, history < 0)] = 0
     history[diff == 1] += 1
-
-    print(np.amin(history))
 
     # create mask based on history
     new_mask = history.copy()
@@ -170,9 +173,3 @@ def combine_masks(mask1, mask2):
 def reliable_baseline(diff, percent=np.inf):
     height, width = diff.shape
     return np.sum(diff) < percent * (height * width)
-
-DIFF_METHODS = [
-    diff_method1,
-    diff_method2,
-    diff_method3
-]
