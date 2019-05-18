@@ -5,14 +5,7 @@ import time
 import image_processing
 
 
-DIFF_METHODS = [
-    image_processing.diff_method1,
-    image_processing.diff_method2,
-    image_processing.diff_method4,
-    image_processing.diff_method5
-]
-
-DIFF_METHOD = 3
+diff_method = image_processing.DiffMethods.INTERSECT
 
 
 def run_session(session=None, viz=True):
@@ -35,7 +28,7 @@ def run_session(session=None, viz=True):
         im = cv2.imread(session_images[i])
 
         # Call diff method
-        diff = DIFF_METHODS[DIFF_METHOD](baseline, im)
+        diff = diff_method(baseline, im)
 
         # Check if reliable diff
         if not image_processing.reliable_baseline(diff):
@@ -58,10 +51,10 @@ def run_session(session=None, viz=True):
         cv2.imwrite("results/result.jpg", output1)
 
         if viz:
-            cv2.imshow("Difference ", output1)
-            k = cv2.waitKey(300) & 0xff
-            if k == 27:
-                break
+            # cv2.imshow("Difference ", output1)
+            # k = cv2.waitKey(300) & 0xff
+            # if k == 27:
+            #     break
             cv2.imshow("Difference ", output2)
             k = cv2.waitKey(300) & 0xff
             if k == 27:

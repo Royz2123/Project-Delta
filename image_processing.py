@@ -1,3 +1,6 @@
+from enum import Enum
+
+from skimage.feature import hog
 from skimage.measure import compare_ssim
 import imutils
 import cv2
@@ -5,6 +8,8 @@ import numpy as np
 
 MIN_CNT_SIZE = 30
 DIFFERENCE_THRESHOLD = 70
+HOG_THRESHOLD = 4
+
 
 LEARNING_RATE = 0.005
 STAY_FACTOR = 20
@@ -22,7 +27,7 @@ EDGE_THICKNESS = 6
 # Diff methods get 2 images as input, and output the diff matrix
 
 
-def diff_method1(im1, im2):
+def diff_edges(im1, im2):
     edges1 = cv2.Canny(im1, 100, 200)
     edges2 = cv2.Canny(im2, 100, 200)
 
@@ -36,13 +41,13 @@ def diff_method1(im1, im2):
     kernel = np.ones((EDGE_THICKNESS - 1, EDGE_THICKNESS - 1), np.uint8)
     diff = cv2.morphologyEx(diff, cv2.MORPH_OPEN, kernel)
 
-    cv2.imshow("Test", diff)
+    # cv2.imshow("Test", diff)
 
     diff[diff > 0] = 1
     return diff
 
 
-def diff_method2(im1, im2):
+def diff_sub(im1, im2):
     diff = cv2.absdiff(im1, im2)
     # diff = cv2.equalizeHist(diff)
     diff = cv2.threshold(diff, DIFFERENCE_THRESHOLD, 255, cv2.THRESH_BINARY_INV)[1]
@@ -51,17 +56,74 @@ def diff_method2(im1, im2):
     return diff
 
 
-def diff_method3(im1, im2):
+def diff_background_sub_1(im1, im2):
     return back_sub(im1, im2, BACK_SUB1)
 
 
-def diff_method4(im1, im2):
+def diff_background_sub_2(im1, im2):
     return back_sub(im1, im2, BACK_SUB2)
 
 
-def diff_method5(im1, im2):
+def diff_background_sub_3(im1, im2):
     return back_sub(im1, im2, BACK_SUB3)
 
+def diff_hog(im1, im2):
+    original_shape = im2.shape
+    im1 = cv2.resize(im1, (1010, 510))
+    im2 = cv2.resize(im2, (1010, 510))
+
+    hog1 = hog(im1, orientations=9, pixels_per_cell=(10, 10), feature_vector=False,
+               cells_per_block=(2, 2), multichannel=True)
+    hog2 = hog(im2, orientations=9, pixels_per_cell=(10, 10), feature_vector=False,
+               cells_per_block=(2, 2), multichannel=True)
+
+    diff = cv2.absdiff(hog2, hog1)
+    diff = np.sum(diff, (2,3,4))
+
+    diff[diff < HOG_THRESHOLD] = 0
+    diff = cv2.resize(diff, (original_shape[1], original_shape[0]))
+
+    kernel = np.ones((3, 3), np.uint8)
+    diff = cv2.morphologyEx(diff, cv2.MORPH_CLOSE, kernel, iterations=2)
+    diff = cv2.morphologyEx(diff, cv2.MORPH_OPEN, kernel, iterations=2)
+
+    # cv2.imshow("Test", diff)
+    # cv2.waitKey(0)
+    diff[diff <= HOG_THRESHOLD] = 0
+    diff[diff > HOG_THRESHOLD] = 1
+    return diff
+
+def diff_ssim(im1, im2):
+    # convert the images to grayscale
+    grayA = cv2.cvtColor(im1, cv2.COLOR_BGR2GRAY)
+    grayB = cv2.cvtColor(im2, cv2.COLOR_BGR2GRAY)
+
+    # compute the Structural Similarity Index (SSIM) between the two
+    # images, ensuring that the difference image is returned
+    (score, diff) = compare_ssim(grayA, grayB, full=True)
+    diff = (diff * 255).astype("uint8")
+
+    diff = cv2.threshold(diff, DIFFERENCE_THRESHOLD, 255, cv2.THRESH_BINARY_INV)[1]
+
+    diff[diff > 0] = 1
+
+    return diff
+
+def intersectMethods(im1, im2):
+    methods = [DiffMethods.SSIM, DiffMethods.BASIC_SUB, DiffMethods.BACKGROUND_SUB_2, DiffMethods.HOG]
+    weights = [0.5, 0.5, 0.6, 0.4]
+    total_diff = np.array(methods[0](im1, im2)) * weights[0]
+    cv2.imshow("basic changes method 1", 255 * total_diff.astype(float))
+    i = 2
+    for method in methods[1:]:
+        diff = np.array(method(im1, im2))
+        cv2.imshow("basic changes method " + str(i), 255 * diff)
+        total_diff += diff
+        # cv2.imshow("intersection " + str(i), 255 * total_diff.astype(float))
+        i += 1
+    total_diff[total_diff >= 1] = 1
+    total_diff[total_diff < 1] = 0
+    return total_diff
 
 def back_sub(im1, im2, back_sub):
     im2 = cv2.cvtColor(im2, cv2.COLOR_BGR2GRAY)
@@ -203,3 +265,15 @@ def combine_masks(mask1, mask2):
 def reliable_baseline(diff, percent=np.inf):
     height, width = diff.shape
     return np.sum(diff) < percent * (height * width)
+
+class DiffMethods(Enum):
+    EDGES = diff_edges
+    BASIC_SUB = diff_sub
+    BACKGROUND_SUB_1 = diff_background_sub_1
+    BACKGROUND_SUB_2 = diff_background_sub_3
+    BACKGROUND_SUB_3 = diff_background_sub_3
+    HOG = diff_hog
+    SSIM = diff_ssim
+    INTERSECT = intersectMethods
+
+
