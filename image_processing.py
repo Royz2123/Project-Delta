@@ -11,8 +11,8 @@ DIFFERENCE_THRESHOLD = 70
 HOG_THRESHOLD = 4
 
 
-LEARNING_RATE = 0.005
-STAY_FACTOR = 20
+LEARNING_RATE = 0.05
+STAY_FACTOR = 10
 INF = 100000
 
 # BACK_SUB = cv2.createBackgroundSubtractorMOG2()
@@ -244,7 +244,7 @@ def update_changes(mask, history, diff):
     history[diff == 1] += 1
 
     # check for persistent changes
-    history[history > STAY_FACTOR] = INF
+    history[history >= STAY_FACTOR] = INF
 
     # create mask based on history
     new_mask = history.copy()
