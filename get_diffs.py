@@ -12,7 +12,7 @@ DIFF_METHODS = [
     image_processing.diff_method5
 ]
 
-DIFF_METHOD = 3
+DIFF_METHOD = 2
 
 
 def run_session(session=None, viz=True):
@@ -78,7 +78,7 @@ def run_session(session=None, viz=True):
 
 
 if __name__ == "__main__":
-    run_session("indoor2")
+    run_session("outdoor4")
 
 
 """
