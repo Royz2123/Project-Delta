@@ -10,7 +10,9 @@ import image_processing
 DIFF_METHODS = [
     image_processing.diff_method1,
     image_processing.diff_method2,
-    image_processing.diff_method3
+    image_processing.diff_method3,
+    image_processing.diff_method4,
+    image_processing.diff_method5
 ]
 
 DIFF_METHOD = 2
@@ -60,9 +62,13 @@ def run_session(session=None, viz=True):
 
         if viz:
             cv2.imshow("Difference ", output1)
-            cv2.waitKey(0)
+            k = cv2.waitKey(300) & 0xff
+            if k == 27:
+                break
             cv2.imshow("Difference ", output2)
-            cv2.waitKey(0)
+            k = cv2.waitKey(300) & 0xff
+            if k == 27:
+                break
         else:
             time.sleep(1)
 
@@ -75,7 +81,7 @@ def run_session(session=None, viz=True):
 
 
 if __name__ == "__main__":
-    run_session("outdoor2")
+    run_session("indoor2")
 
 
 """

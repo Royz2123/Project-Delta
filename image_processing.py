@@ -5,9 +5,13 @@ import numpy as np
 
 MIN_CNT_SIZE = 30
 DIFFERENCE_THRESHOLD = 70
-BACK_SUB = cv2.bgsegm.createBackgroundSubtractorLSBP()
-BACK_SUB = cv2.createBackgroundSubtractorMOG2()
-# BACK_SUB = cv2.bgsegm.createBackgroundSubtractorMOG()
+
+# BACK_SUB = cv2.createBackgroundSubtractorMOG2()
+# BACK_SUB = cv2.bgsegm.createBackgroundSubtractorGMG(4, 0.8)
+
+BACK_SUB1 = cv2.bgsegm.createBackgroundSubtractorLSBP(minCount=1, LSBPthreshold=10, Tlower=10, Tupper=20)
+BACK_SUB2 = cv2.bgsegm.createBackgroundSubtractorMOG(history=10000, nmixtures = 5, backgroundRatio = 0.6, noiseSigma = 0)
+BACK_SUB3 = cv2.bgsegm.createBackgroundSubtractorGSOC(replaceRate=0.05, propagationRate=0.0001, alpha=0.05, beta=0.05)
 
 EDGE_THICKNESS = 6
 
@@ -29,7 +33,6 @@ def diff_method1(im1, im2):
     diff = cv2.morphologyEx(diff, cv2.MORPH_OPEN, kernel)
 
     cv2.imshow("Test", diff)
-    cv2.waitKey(0)
 
     diff[diff > 0] = 1
     return diff
@@ -37,6 +40,7 @@ def diff_method1(im1, im2):
 
 def diff_method2(im1, im2):
     diff = cv2.absdiff(im1, im2)
+    # diff = cv2.equalizeHist(diff)
     diff = cv2.threshold(diff, DIFFERENCE_THRESHOLD, 255, cv2.THRESH_BINARY_INV)[1]
     diff = 255 - cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
     diff[diff > 0] = 1
@@ -44,12 +48,30 @@ def diff_method2(im1, im2):
 
 
 def diff_method3(im1, im2):
+    return back_sub(im1, im2, BACK_SUB1)
+
+
+def diff_method4(im1, im2):
+    return back_sub(im1, im2, BACK_SUB2)
+
+
+def diff_method5(im1, im2):
+    return back_sub(im1, im2, BACK_SUB3)
+
+
+
+
+def back_sub(im1, im2, back_sub):
     im2 = cv2.cvtColor(im2, cv2.COLOR_BGR2GRAY)
-    im2 = cv2.equalizeHist(im2)
+    # im2 = cv2.equalizeHist(im2)
     im2 = cv2.GaussianBlur(im2, (5, 5), 0)
-    fgmask = BACK_SUB.apply(im2)
+    fgmask = back_sub.apply(im2, learningRate=0.05)
+
+    kernel = np.ones((EDGE_THICKNESS, EDGE_THICKNESS), np.uint8)
+    fgmask = cv2.dilate(fgmask, kernel)
+
     cv2.imshow("Difference ", fgmask)
-    cv2.waitKey(0)
+    k = cv2.waitKey(300) & 0xff
     return fgmask
 
 
@@ -126,14 +148,14 @@ def display_binary_im(bin_im):
     bin_im = bin_im.astype(np.uint8)
     bin_im[bin_im > 0] = 255
     cv2.imshow("Difference ", bin_im)
-    cv2.waitKey(0)
+    k = cv2.waitKey(300) & 0xff
 
 
 def update_changes(mask, history, diff):
     # diff erode and dialate
-    kernel = np.ones((4, 4), np.uint8)
-    diff = cv2.morphologyEx(diff, cv2.MORPH_OPEN, kernel)
-    diff = cv2.morphologyEx(diff, cv2.MORPH_CLOSE, kernel)
+    #kernel = np.ones((2, 2), np.uint8)
+    #diff = cv2.morphologyEx(diff, cv2.MORPH_OPEN, kernel)
+    #diff = cv2.morphologyEx(diff, cv2.MORPH_CLOSE, kernel)
 
     """
     # get changes
@@ -162,6 +184,7 @@ def update_changes(mask, history, diff):
 
     display_binary_im(new_mask)
     return new_mask, history
+
 
 def draw_changes(img, mask):
     img[mask > 0] = [0, 0, 255]

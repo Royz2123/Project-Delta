@@ -22,12 +22,12 @@ for path in session_images:
 
     fgmask = fgbgs[2].apply(frame)
     cv2.imshow('frame', fgmask)
-    k = cv2.waitKey(300) & 0xff
+    k = cv2.waitKey(1) & 0xff
     if k == 27:
         break
 
     cv2.imshow('frame', fgmask)
-    k = cv2.waitKey(300) & 0xff
+    k = cv2.waitKey(1) & 0xff
     if k == 27:
         break
 cv2.destroyAllWindows()
