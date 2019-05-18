@@ -1,8 +1,6 @@
 import cv2
 import os
-import random
 import time
-import numpy as np
 
 import image_processing
 
@@ -10,12 +8,11 @@ import image_processing
 DIFF_METHODS = [
     image_processing.diff_method1,
     image_processing.diff_method2,
-    image_processing.diff_method3,
     image_processing.diff_method4,
     image_processing.diff_method5
 ]
 
-DIFF_METHOD = 2
+DIFF_METHOD = 3
 
 
 def run_session(session=None, viz=True):

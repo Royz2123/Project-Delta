@@ -6,6 +6,10 @@ import numpy as np
 MIN_CNT_SIZE = 30
 DIFFERENCE_THRESHOLD = 70
 
+LEARNING_RATE = 0.005
+STAY_FACTOR = 20
+INF = 100000
+
 # BACK_SUB = cv2.createBackgroundSubtractorMOG2()
 # BACK_SUB = cv2.bgsegm.createBackgroundSubtractorGMG(4, 0.8)
 
@@ -59,19 +63,19 @@ def diff_method5(im1, im2):
     return back_sub(im1, im2, BACK_SUB3)
 
 
-
-
 def back_sub(im1, im2, back_sub):
     im2 = cv2.cvtColor(im2, cv2.COLOR_BGR2GRAY)
     # im2 = cv2.equalizeHist(im2)
     im2 = cv2.GaussianBlur(im2, (5, 5), 0)
-    fgmask = back_sub.apply(im2, learningRate=0.05)
+    fgmask = back_sub.apply(im2, learningRate=LEARNING_RATE)
 
     kernel = np.ones((EDGE_THICKNESS, EDGE_THICKNESS), np.uint8)
     fgmask = cv2.dilate(fgmask, kernel)
 
     cv2.imshow("Difference ", fgmask)
     k = cv2.waitKey(300) & 0xff
+
+    fgmask[fgmask > 0] = 1
     return fgmask
 
 
@@ -176,6 +180,9 @@ def update_changes(mask, history, diff):
     history[diff == 0] -= 2
     history[np.bitwise_and(diff == 1, history < 0)] = 0
     history[diff == 1] += 1
+
+    # check for persistent changes
+    history[history > STAY_FACTOR] = INF
 
     # create mask based on history
     new_mask = history.copy()
