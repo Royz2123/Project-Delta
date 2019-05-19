@@ -19,6 +19,8 @@ def run_session(session=None, viz=True):
 
     # create important databases
     baseline = cv2.imread(session_images[0])
+    cv2.imwrite("results/baseline.jpg", baseline)
+
     mask, history = image_processing.create_changes_dbs(baseline)
     final_mask = mask.copy()
     baseline_index = 0
