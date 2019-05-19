@@ -12,7 +12,7 @@ with socketserver.TCPServer(("", PORT), Handler) as httpd:
     print("serving at port", PORT)
     threading.Thread(target=httpd.serve_forever).start()
 
-    get_diffs.run_session("indoor2")
+    get_diffs.run_session("outdoor4")
 
     while True:
         time.sleep(2)
