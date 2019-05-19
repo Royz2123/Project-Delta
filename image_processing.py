@@ -6,13 +6,15 @@ import imutils
 import cv2
 import numpy as np
 
+IMAGE_SHOW_DELAY = 15
+
 MIN_CNT_SIZE = 30
-DIFFERENCE_THRESHOLD = 70
-HOG_THRESHOLD = 4
+DIFFERENCE_THRESHOLD = 30
+HOG_THRESHOLD = 3
 
 
-LEARNING_RATE = 0.05
-STAY_FACTOR = 10
+LEARNING_RATE = 0.02
+STAY_FACTOR = 7
 INF = 100000
 
 # BACK_SUB = cv2.createBackgroundSubtractorMOG2()
@@ -103,24 +105,32 @@ def diff_ssim(im1, im2):
     (score, diff) = compare_ssim(grayA, grayB, full=True)
     diff = (diff * 255).astype("uint8")
 
+    kernel = np.ones((3, 3), np.uint8)
+    # diff = cv2.dilate(diff, kernel, iterations=1)
+    # diff = cv2.erode(diff, kernel, iterations=1)
+
     diff = cv2.threshold(diff, DIFFERENCE_THRESHOLD, 255, cv2.THRESH_BINARY_INV)[1]
+    diff = cv2.morphologyEx(diff, cv2.MORPH_CLOSE, kernel, iterations=6)
+
 
     diff[diff > 0] = 1
 
     return diff
 
 def intersectMethods(im1, im2):
-    methods = [DiffMethods.SSIM, DiffMethods.BASIC_SUB, DiffMethods.BACKGROUND_SUB_2, DiffMethods.HOG]
-    weights = [0.5, 0.5, 0.6, 0.4]
+    methods = [DiffMethods.BACKGROUND_SUB_2, DiffMethods.HOG, DiffMethods.BACKGROUND_SUB_3]
+    # weights = [0.2, 0.7, 0.4, 0.4]
+    weights = [0.7,0.3,0.3]
     total_diff = np.array(methods[0](im1, im2)) * weights[0]
-    cv2.imshow("basic changes method 1", 255 * total_diff.astype(float))
-    i = 2
+    cv2.imshow("basic changes " + get_method_name(methods[0]), 255 * total_diff.astype(float))
+    i = 1
     for method in methods[1:]:
         diff = np.array(method(im1, im2))
-        cv2.imshow("basic changes method " + str(i), 255 * diff)
-        total_diff += diff
-        # cv2.imshow("intersection " + str(i), 255 * total_diff.astype(float))
+        cv2.imshow("basic changes " + get_method_name(method), 255 * diff.astype(float))
+        print(method)
+        total_diff += diff * weights[i]
         i += 1
+        # cv2.imshow("intersection " + str(i), 255 * total_diff.astype(float))
     total_diff[total_diff >= 1] = 1
     total_diff[total_diff < 1] = 0
     return total_diff
@@ -134,8 +144,8 @@ def back_sub(im1, im2, back_sub):
     kernel = np.ones((EDGE_THICKNESS, EDGE_THICKNESS), np.uint8)
     fgmask = cv2.dilate(fgmask, kernel)
 
-    cv2.imshow("Difference ", fgmask)
-    k = cv2.waitKey(300) & 0xff
+    # cv2.imshow("Difference ", fgmask)
+    # k = cv2.waitKey(300) & 0xff
 
     fgmask[fgmask > 0] = 1
     return fgmask
@@ -214,7 +224,7 @@ def display_binary_im(bin_im):
     bin_im = bin_im.astype(np.uint8)
     bin_im[bin_im > 0] = 255
     cv2.imshow("Difference ", bin_im)
-    k = cv2.waitKey(300) & 0xff
+    k = cv2.waitKey(IMAGE_SHOW_DELAY) & 0xff
 
 
 def update_changes(mask, history, diff):
@@ -270,10 +280,11 @@ class DiffMethods(Enum):
     EDGES = diff_edges
     BASIC_SUB = diff_sub
     BACKGROUND_SUB_1 = diff_background_sub_1
-    BACKGROUND_SUB_2 = diff_background_sub_3
+    BACKGROUND_SUB_2 = diff_background_sub_2
     BACKGROUND_SUB_3 = diff_background_sub_3
     HOG = diff_hog
     SSIM = diff_ssim
     INTERSECT = intersectMethods
-
+def get_method_name(method):
+    return str(method).split(" ")[1]
 

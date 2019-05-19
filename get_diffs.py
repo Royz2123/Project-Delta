@@ -56,7 +56,7 @@ def run_session(session=None, viz=True):
             # if k == 27:
             #     break
             cv2.imshow("Difference ", output2)
-            k = cv2.waitKey(300) & 0xff
+            k = cv2.waitKey(image_processing.IMAGE_SHOW_DELAY) & 0xff
             if k == 27:
                 break
         else:
@@ -71,7 +71,7 @@ def run_session(session=None, viz=True):
 
 
 if __name__ == "__main__":
-    run_session("indoor2")
+    run_session("outdoor4")
 
 
 """
