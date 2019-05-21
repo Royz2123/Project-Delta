@@ -122,12 +122,12 @@ def intersectMethods(im1, im2):
     # weights = [0.2, 0.7, 0.4, 0.4]
     weights = [0.7,0.3,0.3]
     total_diff = np.array(methods[0](im1, im2)) * weights[0]
-    cv2.imshow("basic changes " + get_method_name(methods[0]), 255 * total_diff.astype(float))
+    #cv2.imshow("basic changes " + get_method_name(methods[0]), 255 * total_diff.astype(float))
     i = 1
     for method in methods[1:]:
         diff = np.array(method(im1, im2))
-        cv2.imshow("basic changes " + get_method_name(method), 255 * diff.astype(float))
-        print(method)
+        #cv2.imshow("basic changes " + get_method_name(method), 255 * diff.astype(float))
+        #print(method)
         total_diff += diff * weights[i]
         i += 1
         # cv2.imshow("intersection " + str(i), 255 * total_diff.astype(float))
