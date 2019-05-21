@@ -4,6 +4,8 @@ import time
 
 import image_processing
 
+from day_or_night import is_night_mode
+
 
 diff_method = image_processing.DiffMethods.INTERSECT
 
@@ -28,7 +30,8 @@ def run_session(session=None, viz=True):
     for i in range(1, len(session_images)):
         baseline = cv2.imread(session_images[baseline_index])
         im = cv2.imread(session_images[i])
-
+        if is_night_mode(im):
+            continue
         # Call diff method
         diff = diff_method(baseline, im)
 
