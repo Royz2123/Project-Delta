@@ -24,8 +24,6 @@ def create_video(path):
     clip.write_videofile("./results/timelapse.webm")
 
 
-
-
 def run_session(session=None, viz=True):
     # Choose session (latest vs. specific)
     if session is None:

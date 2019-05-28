@@ -72,7 +72,11 @@
 				<div class="header-text">
 					<div class="row">
 						<div class="col-md-12 text-center">
-							<img src="./results/result.jpg" id="myImage" alt="Server is Down">
+							<img src="./results/result.jpg" usemap="#workmap" id="myImage" alt="Server is Down">
+
+							<map name="workmap">
+							  <area shape="rect" coords="34,44,270,350" alt="Change" href="#timelapse">
+							</map>
 
 							<script>
 								setInterval(function() {
@@ -112,13 +116,19 @@
 				<div class="header-text">
 					<div class="row">
 						<div class="col-md-12 text-center">
-							<video width="1000" height="500" controls>
+							<video width="1000" height="500" id="vid1" controls>
 								<source src="./results/timelapse.webm"
 									  type="video/webm">
 							  <source src="./results/timelapse.mp4"
 									  type="video/mp4">
 							  Your browser does not support the video tag.
 							</video>
+
+							<script>
+								document.getElementById('vid1').addEventListener('loadedmetadata', function() {
+								  this.currentTime = 10;
+								}, false);
+							</script>
 						</div>
 					</div>
 				</div>

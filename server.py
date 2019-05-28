@@ -13,7 +13,7 @@ with socketserver.TCPServer(("", PORT), Handler) as httpd:
     print(httpd)
     threading.Thread(target=httpd.serve_forever).start()
 
-    get_diffs.run_session("outdoor4")
+    get_diffs.run_session("outdoor4", viz=False)
 
     while True:
         time.sleep(2)
