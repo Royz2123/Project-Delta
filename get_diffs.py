@@ -4,11 +4,27 @@ import time
 import numpy as np
 
 import image_processing
+import moviepy.editor as mp
 
 from day_or_night import is_night_mode
 from period_changes import Period
 
 diff_method = image_processing.DiffMethods.INTERSECT
+
+
+def create_video(path):
+    w, h, d = cv2.imread(path + os.listdir(path)[0]).shape
+    out = cv2.VideoWriter('./results/timelapse.mp4', cv2.VideoWriter_fourcc(*'MP4V'), 7, (h, w))
+
+    for file in os.listdir(path):
+        filepath = path + file
+        out.write(cv2.imread(filepath))
+    out.release()
+    cv2.destroyAllWindows()
+
+    # create webm as well
+    clip = mp.VideoFileClip("./results/timelapse.mp4")
+    clip.write_videofile("./results/timelapse.webm")
 
 
 def run_session(session=None, viz=True):
@@ -17,6 +33,8 @@ def run_session(session=None, viz=True):
         session_path = "sessions/" + max(os.listdir("sessions/")) + "/"
     else:
         session_path = "sessions/" + session + "/"
+
+    create_video(session_path)
 
     session_images = [session_path + path for path in sorted(os.listdir(session_path))]
 
