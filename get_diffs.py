@@ -1,10 +1,13 @@
 import cv2
 import os
 import time
+import numpy as np
 
 import image_processing
 import moviepy.editor as mp
 
+from day_or_night import is_night_mode
+from period_changes import Period
 
 diff_method = image_processing.DiffMethods.INTERSECT
 
@@ -43,10 +46,14 @@ def run_session(session=None, viz=True):
     final_mask = mask.copy()
     baseline_index = 0
 
+    p = Period()
+
     for i in range(1, len(session_images)):
         baseline = cv2.imread(session_images[baseline_index])
         im = cv2.imread(session_images[i])
-
+        if is_night_mode(im):
+            print("skip (night)")
+            continue
         # Call diff method
         diff = diff_method(baseline, im)
 
@@ -62,10 +69,12 @@ def run_session(session=None, viz=True):
 
         # update changes
         mask, history = image_processing.update_changes(mask, history, diff)
+        p.add_diff(image_processing.combine_masks(final_mask, mask))
+        period = p.get_period_changes()
 
         # Draw all the contours on the map
-        output1 = image_processing.draw_changes(baseline, image_processing.combine_masks(final_mask, mask))
-        output2 = image_processing.draw_changes(im, image_processing.combine_masks(final_mask, mask))
+        output1 = image_processing.draw_changes(baseline, period*image_processing.combine_masks(final_mask, mask))
+        output2 = image_processing.draw_changes(im, period*image_processing.combine_masks(final_mask, mask))
 
         cv2.imwrite("demos/demo" + str(i) + ".jpg", output1)
         cv2.imwrite("results/result.jpg", output1)

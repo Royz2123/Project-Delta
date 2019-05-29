@@ -266,7 +266,8 @@ def update_changes(mask, history, diff):
 
 
 def draw_changes(img, mask):
-    img[mask > 0] = [0, 0, 255]
+    contours, _	= cv2.findContours(mask.copy().astype(np.uint8),cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE )
+    cv2.drawContours(img, contours, -1, (0, 255, 0), 3)
     return img
 
 def combine_masks(mask1, mask2):
