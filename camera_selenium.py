@@ -1,6 +1,12 @@
-from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
+
 import time
+
 
 FIRST = "https://my.arlo.com/?_ga=2.72087187.1057132506.1558461222-1738443716.1558191218#/login"
 
@@ -22,17 +28,31 @@ def get_url_selenium():
 
 		elem.send_keys(Keys.RETURN)
 
-		time.sleep(5)
+		#time.sleep(5)
 
-		"""
-		elem = driver.find_element_by_id("cameras_play_idle_51D28573A1683")
-		elem.click()
+		try:
+			elem = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, 'cameras_play_idle_51D28573A1683')))
+			elem.click()
+		except TimeoutException:
+			print("Loading took too much time!")
+
+		#elem = driver.find_element_by_id("cameras_play_idle_51D28573A1683")
+		#elem.click()
+
+		time.sleep(3)
+
+		# try:
+		# 	elem = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'cameras_cameraSnapshot_51D28573A1683')))
+		# 	elem.click()
+		# except TimeoutException:
+		# 	print("Loading took too much time!")
+
 
 		time.sleep(20)
 
 		elem = driver.find_element_by_id("cameras_cameraSnapshot_51D28573A1683")
 		elem.click()
-		"""
+
 
 		# Close annoying alert on homepage that blocks library
 		try:
