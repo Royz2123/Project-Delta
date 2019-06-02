@@ -27,6 +27,29 @@ def create_video(path):
     clip.write_videofile("./results/timelapse.webm")
 
 
+def update_gallery(path):
+    s = '<div class="row">\n'
+    for i, file in enumerate(os.listdir(path)):
+        if i == 12:
+            break
+        if i % 4 == 0:
+            if i != 0:
+                s+='</div></div>\n'
+            s += '<div class="row"><div>\n'
+        filepath = path + file
+        s += '<img width="20%%" height="125" src=/%s onclick="location.href=\'/%s\'">\n' % (filepath, filepath)
+    s += '</div></div>\n'
+
+    page_content = ""
+    with open("./gallery.html", "r") as fileobj:
+        page_content = fileobj.read()
+
+    with open("./gallery.html", "w") as fileobj:
+        lst = page_content.split("<!--EYECATCHER-->")
+        lst[1] = s
+        fileobj.write("<!--EYECATCHER-->".join(lst))
+
+
 def run_session(session=None, viz=True):
     # Choose session (latest vs. specific)
     if session is None:
@@ -34,7 +57,8 @@ def run_session(session=None, viz=True):
     else:
         session_path = "sessions/" + session + "/"
 
-    create_video(session_path)
+    # create_video(session_path)
+    update_gallery(session_path)
 
     session_images = [session_path + path for path in sorted(os.listdir(session_path))]
 
