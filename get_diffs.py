@@ -50,7 +50,7 @@ def update_gallery(path):
         fileobj.write("<!--EYECATCHER-->".join(lst))
 
 
-def run_session(session=None, viz=True):
+def run_session(session, viz):
     # Choose session (latest vs. specific)
     if session is None:
         session_path = "sessions/" + max(os.listdir("sessions/")) + "/"
@@ -100,8 +100,8 @@ def run_session(session=None, viz=True):
         output1 = image_processing.draw_changes(baseline, period*image_processing.combine_masks(final_mask, mask))
         output2 = image_processing.draw_changes(im, period*image_processing.combine_masks(final_mask, mask))
 
-        cv2.imwrite("demos/demo" + str(i) + ".jpg", output1)
-        cv2.imwrite("results/result.jpg", output1)
+        cv2.imwrite("demos/demo" + str(i) + ".jpg", output2)
+        cv2.imwrite("results/result.jpg", output2)
 
         if viz:
             # cv2.imshow("Difference ", output1)
