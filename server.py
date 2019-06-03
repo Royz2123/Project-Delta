@@ -22,5 +22,4 @@ with socketserver.TCPServer(("", PORT), Handler) as httpd:
     # threading.Thread(target=create_session.main).start()
 
     while True:
-        print("yo")
         time.sleep(2)
