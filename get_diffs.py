@@ -70,7 +70,7 @@ def run_session(session=None, viz=True):
         # update changes
         mask, history = image_processing.update_changes(mask, history, diff)
         p.add_diff(image_processing.combine_masks(final_mask, mask))
-        period = p.get_period_changes()
+        period = p.get_period_changes(enable=False)
 
         # Draw all the contours on the map
         output1 = image_processing.draw_changes(baseline, period*image_processing.combine_masks(final_mask, mask))
