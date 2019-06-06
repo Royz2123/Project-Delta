@@ -12,7 +12,7 @@ ALPHA = 0.5
 KERNEL = 11
 
 
-def run_session(session=None, viz=True):
+def run_session(session=None, viz=False):
     # Choose session (latest vs. specific)
     if session is None:
         session_path = "sessions/" + max(os.listdir("sessions/")) + "/"

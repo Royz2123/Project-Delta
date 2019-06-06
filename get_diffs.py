@@ -28,7 +28,7 @@ def create_video(path):
 
 
 def update_gallery(path=None, index=0):
-    SAMPLES = 16
+    SAMPLES = 12
 
     if path is None:
         path = "sessions/" + max(os.listdir("sessions/")) + "/"
@@ -51,7 +51,8 @@ def update_gallery(path=None, index=0):
                 s +='</div></div>\n'
             s += '<div class="row"><div>\n'
         filepath = path + file
-        s += '<img width="20%%" height="125" src=/%s onclick="location.href=\'/%s\'">\n' % (filepath, filepath)
+        s += '<div class="gallery"><img width="20%%" height="125" src=/%s onclick="location.href=\'/%s\'">\n' % (filepath, filepath)
+        s += '<div class="desc">%s</div></div>' % file.split(".")[0].replace("_", " ")
     s += '</div></div>\n'
 
     page_content = ""
@@ -64,7 +65,8 @@ def update_gallery(path=None, index=0):
         fileobj.write("<!--EYECATCHER-->".join(lst))
 
 
-def run_session(session, viz):
+def run_session(session, viz=False):
+    print(viz)
     # Choose session (latest vs. specific)
     if session is None:
         session_path = "sessions/" + max(os.listdir("sessions/")) + "/"
@@ -135,8 +137,8 @@ def run_session(session, viz):
     output = cv2.imread(session_images[0])
     output = image_processing.draw_changes(output, image_processing.combine_masks(final_mask, mask))
     cv2.imwrite("demos/final.jpg", output)
-    cv2.imshow("Output", output)
-    cv2.waitKey(0)
+    #cv2.imshow("Output", output)
+    #cv2.waitKey(0)
 
 
 if __name__ == "__main__":

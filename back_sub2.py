@@ -12,10 +12,10 @@ while(1):
     i += 1
     if i % 10 == 0:
         fgmask = fgbg.apply(frame, learningRate=1)
-        cv.imshow('frame',frame)
-        k = cv.waitKey(IMAGE_SHOW_DELAY) & 0xff
-        if k == 27:
-            break
+        # cv.imshow('frame',frame)
+        # k = cv.waitKey(IMAGE_SHOW_DELAY) & 0xff
+        # if k == 27:
+        #     break
         i = 0
 cap.release()
 cv.destroyAllWindows()

@@ -77,9 +77,9 @@
 								 var first = True;
                                 function myFunction() {
                                     if (first) {
-                                        document.getElementById("myImage").src = "./results/baseline.jpg";
+                                        document.getElementById("myImage").src = "./results/baseline.jpg" + '?rand=' + Math.random();
                                     } else {
-                                        document.getElementById("myImage").src = "./results/last.jpg";
+                                        document.getElementById("myImage").src = "./results/last.jpg" + '?rand=' + Math.random();
                                     }
                                     first = !first;
                                 }

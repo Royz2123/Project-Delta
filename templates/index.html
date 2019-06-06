@@ -33,6 +33,68 @@
 	<link rel="stylesheet" type="text/css" href="fonts/eleganticons/et-icons.css">
 	<!-- Main style -->
 	<link rel="stylesheet" type="text/css" href="css/cardio.css">
+
+	<style>
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+</style>
 </head>
 
 <body>
@@ -75,30 +137,34 @@
 				<div class="header-text">
 					<div class="row">
 						<div class="col-md-12 text-center">
-							<button><a onclick="toggle_changes()">Toggle Changes</a></button>
+							<h3><a>Toggle Changes</a></h3>
+							<label class="switch">
+							  <input onclick="toggle_changes()" type="checkbox">
+							  <span class="slider round"></span>
+							</label>
 
 							<script>
-								var base = "./results/last.jpg";
+								var base = "./results/result.jpg"
 								var toggle = true;
 
 								setInterval(function() {
 									var myImageElement = document.getElementById('myImage');
-									myImageElement.src = base + '?rand=' + Math.random();
+									myImageElement.src = base+ '?rand=' + Math.random();
 								}, 1000);
 
 								function toggle_changes() {
 									if (toggle) {
-								  		document.getElementById("myImage").src = "./results/last.jpg";
+								  		document.getElementById("myImage").src = "./results/last.jpg"+ '?rand=' + Math.random();
 								  		base = "./results/last.jpg";
 								  	} else {
-								  		document.getElementById("myImage").src = "./results/result.jpg";
+								  		document.getElementById("myImage").src = "./results/result.jpg"+ '?rand=' + Math.random();
 								  		base = "./results/result.jpg";
 								  	}
 								  	toggle = !toggle;
 								}
 							</script>
 							<br>
-							<img src="" usemap="#workmap" id="myImage" alt="Loading...">
+							<img src="./results/result.jpg" usemap="#workmap" id="myImage" alt="Loading...">
 
 							<map name="workmap">
 							  <area shape="rect" coords="34,44,270,350" alt="Change" href="#timelapse">
