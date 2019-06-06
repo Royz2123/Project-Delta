@@ -1,7 +1,14 @@
 from flask import Flask
 from flask import Flask, flash, redirect, render_template, request, session, abort, send_from_directory
 import os
+import threading
+import get_diffs
+import time
+import logging
+import camera_selenium
+import sys
 
+logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__)
 
 
@@ -15,13 +22,10 @@ def home():
 
 @app.route('/login', methods=['POST'])
 def do_admin_login():
-    if request.form['password'] == 'password' and request.form['username'] == 'admin':
-        print("Yo")
-        session['logged_in'] = True
-        return home()
-    else:
-        flash('wrong password!')
-        return home()
+    camera_selenium.username = request.form['username']
+    camera_selenium.password = request.form['password']
+    session['logged_in'] = True
+    return home()
 
 
 @app.route("/logout")
@@ -50,6 +54,11 @@ def send_result(path):
     return send_from_directory('results', path)
 
 
+@app.route('/fonts/<path:path>')
+def send_font(path):
+    return send_from_directory('fonts', path)
+
+
 @app.route('/sessions/<path:path>')
 def send_session(path):
     return send_from_directory('sessions', path)
@@ -57,9 +66,36 @@ def send_session(path):
 
 @app.route('/<path:path>')
 def send_template(path):
+    print(path)
+    if path == "gallery.html":
+        try:
+            index = int(request.args.get('num'))
+            get_diffs.update_gallery(index=index)
+        except Exception as e:
+            print(e)
     return send_from_directory('templates', path)
 
+"""
+@app.route('/gallery.html', methods=['GET'])
+def gallery():
+    print("LOLLLL")
+    try:
+        index = int(request.form['num'])
+        logging.critical(index)
+        get_diffs.update_gallery(index=index)
+    except Exception as e:
+        logging.critical(e.with_traceback())
+    finally:
+        return send_from_directory('templates', "gallery.html")
+"""
 
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
-    app.run(debug=True,host='0.0.0.0', port=4000)
+
+    threading.Thread(target=app.run, args=('0.0.0.0', 4000)).start()
+    threading.Thread(target=get_diffs.run_session, args=("z_outdoor4", False)).start()
+    # threading.Thread(target=create_session.main).start()
+
+    while True:
+        time.sleep(2)
+

@@ -7,6 +7,8 @@ from selenium.common.exceptions import TimeoutException
 
 import time
 
+username = "royzohar25@gmail.com"
+password = "1Qazwsxdcv"
 
 FIRST = "https://my.arlo.com/?_ga=2.72087187.1057132506.1558461222-1738443716.1558191218#/login"
 
@@ -21,10 +23,10 @@ def get_url_selenium():
 		it will shorten the waiting time and avoid errors.")
 		driver.get(FIRST)
 		elem = driver.find_element_by_name("userId")
-		elem.send_keys("royzohar25@gmail.com")
+		elem.send_keys(username)
 
 		elem = driver.find_element_by_name("password")
-		elem.send_keys("1Qazwsxdcv")
+		elem.send_keys(password)
 
 		elem.send_keys(Keys.RETURN)
 
