@@ -27,7 +27,46 @@ def create_video(path):
     clip.write_videofile("./results/timelapse.webm")
 
 
-def run_session(session=None, viz=True):
+def update_gallery(path=None, index=0):
+    SAMPLES = 12
+
+    if path is None:
+        path = "sessions/" + max(os.listdir("sessions/")) + "/"
+
+    s = "<ul class='gallery'>"
+    for i in range(len(os.listdir(path)) // SAMPLES + 1):
+        if i == index:
+            s += '<li><a class="active" href="/gallery.html?num=%d">%d</a></li>' % (i, i)
+        else:
+            s += '<li><a href="/gallery.html?num=%d">%d</a></li>' % (i, i)
+    s += "</ul>"
+
+    s += '<div class="row">\n'
+    for i, file in enumerate(sorted(os.listdir(path))[index * SAMPLES:]):
+        print(file)
+        if i == SAMPLES:
+            break
+        if i % 4 == 0:
+            if i != 0:
+                s +='</div></div>\n'
+            s += '<div class="row"><div>\n'
+        filepath = path + file
+        s += '<div class="gallery"><img width="20%%" height="125" src=/%s onclick="location.href=\'/%s\'">\n' % (filepath, filepath)
+        s += '<div class="desc">%s</div></div>' % file.split(".")[0].replace("_", " ")
+    s += '</div></div>\n'
+
+    page_content = ""
+    with open("./templates/gallery.html", "r") as fileobj:
+        page_content = fileobj.read()
+
+    with open("./templates/gallery.html", "w") as fileobj:
+        lst = page_content.split("<!--EYECATCHER-->")
+        lst[1] = s
+        fileobj.write("<!--EYECATCHER-->".join(lst))
+
+
+def run_session(session, viz=False):
+    print(viz)
     # Choose session (latest vs. specific)
     if session is None:
         session_path = "sessions/" + max(os.listdir("sessions/")) + "/"
@@ -35,6 +74,9 @@ def run_session(session=None, viz=True):
         session_path = "sessions/" + session + "/"
 
     # create_video(session_path)
+
+    update_gallery(session_path)
+
 
     session_images = [session_path + path for path in sorted(os.listdir(session_path))]
 
@@ -51,6 +93,7 @@ def run_session(session=None, viz=True):
     for i in range(1, len(session_images)):
         baseline = cv2.imread(session_images[baseline_index])
         im = cv2.imread(session_images[i])
+        orig = im.copy()
         if is_night_mode(im):
             print("skip (night)")
             continue
@@ -76,9 +119,9 @@ def run_session(session=None, viz=True):
         output1 = image_processing.draw_changes(baseline, period*image_processing.combine_masks(final_mask, mask))
         output2 = image_processing.draw_changes(im, period*image_processing.combine_masks(final_mask, mask))
 
-        cv2.imwrite("days/demo" + str(i) + ".jpg",255*p.day_changes())
-        cv2.imwrite("demos/demo" + str(i) + ".jpg", output1)
-        cv2.imwrite("results/result.jpg", output1)
+        cv2.imwrite("demos/demo" + str(i) + ".jpg", output2)
+        cv2.imwrite("results/result.jpg", output2)
+        cv2.imwrite("results/last.jpg", orig)
 
         if viz:
             # cv2.imshow("Difference ", output1)
@@ -96,12 +139,12 @@ def run_session(session=None, viz=True):
     output = cv2.imread(session_images[0])
     output = image_processing.draw_changes(output, image_processing.combine_masks(final_mask, mask))
     cv2.imwrite("demos/final.jpg", output)
-    cv2.imshow("Output", output)
-    cv2.waitKey(0)
+    #cv2.imshow("Output", output)
+    #cv2.waitKey(0)
 
 
 if __name__ == "__main__":
-    run_session("session_2019_05_28_09_15_52",viz=False)
+    run_session("outdoor4")
 
 
 """
