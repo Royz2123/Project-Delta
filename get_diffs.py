@@ -34,7 +34,7 @@ def run_session(session=None, viz=True):
     else:
         session_path = "sessions/" + session + "/"
 
-    create_video(session_path)
+    # create_video(session_path)
 
     session_images = [session_path + path for path in sorted(os.listdir(session_path))]
 
@@ -69,13 +69,14 @@ def run_session(session=None, viz=True):
 
         # update changes
         mask, history = image_processing.update_changes(mask, history, diff)
-        p.add_diff(image_processing.combine_masks(final_mask, mask))
+        p.add_diff(image_processing.combine_masks(final_mask, mask),sorted(os.listdir(session_path))[i])
         period = p.get_period_changes(enable=False)
 
         # Draw all the contours on the map
         output1 = image_processing.draw_changes(baseline, period*image_processing.combine_masks(final_mask, mask))
         output2 = image_processing.draw_changes(im, period*image_processing.combine_masks(final_mask, mask))
 
+        cv2.imwrite("days/demo" + str(i) + ".jpg",255*p.day_changes())
         cv2.imwrite("demos/demo" + str(i) + ".jpg", output1)
         cv2.imwrite("results/result.jpg", output1)
 
@@ -89,7 +90,7 @@ def run_session(session=None, viz=True):
             if k == 27:
                 break
         else:
-            time.sleep(1)
+            time.sleep(0.05)
 
     # output the final differences
     output = cv2.imread(session_images[0])
@@ -100,7 +101,7 @@ def run_session(session=None, viz=True):
 
 
 if __name__ == "__main__":
-    run_session("outdoor4")
+    run_session("session_2019_05_28_09_15_52",viz=False)
 
 
 """

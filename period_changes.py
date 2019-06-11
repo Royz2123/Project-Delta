@@ -1,17 +1,17 @@
 import numpy as np
 import datetime
+import cv2
+import os
 
 class Period:
 
     def __init__(self,start_at=100):
-        self.width = 3#500
-        self.height = 3#1000
+        self.width = 500
+        self.height = 1000
         self.diff_sum = np.zeros((self.width,self.height))
         self.length = 0
         self.pre = None
         self.start_at = start_at
-        self.all = np.zeros((0,self.width,self.height))
-        self.t = np.zeros(0)
 
     def add_diff(self, diff, name):
         if self.pre is None:
@@ -20,8 +20,7 @@ class Period:
         self.pre = diff.copy()
         self.length += 1
 
-        self.all = np.append(self.all, [diff], axis=0)
-        self.t = np.append(self.t, self.get_img_time(name))
+        cv2.imwrite("masks/" + name, diff)
 
     def get_period_changes(self,threshold=0.1,enable=True):
         if self.length <= self.start_at or not enable:
@@ -29,21 +28,26 @@ class Period:
         return np.where(self.diff_sum.copy()/(self.length-1) < threshold, np.ones((self.width,self.height)), np.zeros((self.width,self.height)))
 
     def day_changes(self):
-        t = self.t[-1]
+        names = sorted(os.listdir("masks"))
+        t = self.get_img_time(names[self.length-1])
         r = np.zeros((self.width, self.height), dtype=bool)
         result = np.ones((self.width, self.height), dtype=bool)
         for i in range(self.length-1,-1,-1):
-            if self.t[i] <= t - 24 * 60 * 60 - 15 * 60:
+            if self.get_img_time(names[i]) <= t - 24 * 60 * 60 - 15 * 60:
                 t = t - 24 * 60 * 60
                 result = np.logical_and(result,r)
                 r = np.zeros((self.width, self.height), dtype=bool)
-            if t - 24*60*60 - 15*60 < self.t[i] < t - 24*60*60 + 15*60:
-                r = np.logical_or(r,self.all[-1, :, :] == self.all[i, :, :])
+            if t - 24*60*60 - 15*60 < self.get_img_time(names[i]) < t - 24*60*60 + 15*60:
+                img = cv2.imread("masks/" + names[i], -1)
+                r = np.logical_or(r,1 == img[:, :])
                 if i == 0:
                     t = t - 24 * 60 * 60
                     result = np.logical_and(result, r)
                     r = np.zeros((self.width, self.height), dtype=bool)
-        return result
+        if self.length > 0:
+            img = cv2.imread("masks/" + names[self.length-1],-1)
+            result = np.logical_and(result, 1 == img[:, :])
+        return np.where(result, np.ones((self.width,self.height)), np.zeros((self.width,self.height)))
 
 
     def get_img_time(self, img_name):

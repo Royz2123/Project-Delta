@@ -223,7 +223,7 @@ def create_changes_dbs(im):
 def display_binary_im(bin_im):
     bin_im = bin_im.astype(np.uint8)
     bin_im[bin_im > 0] = 255
-    cv2.imshow("Difference ", bin_im)
+    # cv2.imshow("Difference ", bin_im)
     k = cv2.waitKey(IMAGE_SHOW_DELAY) & 0xff
 
 
