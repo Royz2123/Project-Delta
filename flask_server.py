@@ -8,7 +8,7 @@ import logging
 import camera_selenium
 import sys
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.CRITICAL)
 app = Flask(__name__)
 
 
@@ -66,11 +66,11 @@ def send_session(path):
 
 @app.route('/<path:path>')
 def send_template(path):
-    print(path)
     if path == "gallery.html":
         try:
-            index = int(request.args.get('num'))
-            get_diffs.update_gallery(index=index)
+            day_index = int(request.args.get('day'))
+            hour_index = int(request.args.get('hour'))
+            get_diffs.update_gallery(day_index=day_index, hour_index=hour_index)
         except Exception as e:
             print(e)
     return send_from_directory('templates', path)
@@ -92,7 +92,7 @@ def gallery():
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
 
-    threading.Thread(target=app.run, args=('0.0.0.0', 4000)).start()
+    threading.Thread(target=app.run, args=('0.0.0.0', 4000, False)).start()
     threading.Thread(target=get_diffs.run_session, args=("z_outdoor4", False)).start()
     # threading.Thread(target=create_session.main).start()
 

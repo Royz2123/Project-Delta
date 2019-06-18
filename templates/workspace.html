@@ -51,13 +51,19 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#"><img src="img/logo.png" data-active-url="img/logo-active.png" alt=""></a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-left main-nav">
-                <li><a href="/index.html">Project Delta</a></li>
+                <li><a class="navbar-brand" href="#"><img src="img/logo.jpeg" height="100px" width="150px"
+                                                          data-active-url="img/logo.jpeg" alt=""></a></li>
+                <li><a href="/index.html">Home</a></li>
+                <li><a href="/index.html#baseline">Baseline</a></li>
+                <li><a href="/index.html#timelapse">Timelapse</a></li>
+                <li><a href="/indoor.html">Indoor Mode</a></li>
+                <li><a href="/outdoor.html">Outdoor Mode</a></li>
+                <li><a href="/gallery.html">Gallery</a></li>
                 <li><a href="/workspace.html">Workspace</a></li>
             </ul>
         </div>
@@ -66,14 +72,15 @@
     <!-- /.container-fluid -->
 </nav>
 <header id="changes">
-		<div class="container">
-			<div class="table">
-				<div class="header-text">
-					<div class="row">
-						<div class="col-md-12 text-center">
-							<img src="./results/baseline.jpg" onclick="myFunction()" usemap="#workmap" id="myImage" alt="Server is Down">
+    <div class="container">
+        <div class="table">
+            <div class="header-text">
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <img src="./results/baseline.jpg" onclick="myFunction()" usemap="#workmap" id="myImage"
+                             alt="Server is Down">
 
-							<script>
+                        <script>
 								 var first = True;
                                 function myFunction() {
                                     if (first) {
@@ -83,13 +90,15 @@
                                     }
                                     first = !first;
                                 }
-							</script>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</header>
+
+
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
 
 <!-- Holder for mobile navigation -->
 <div class="mobile-nav">

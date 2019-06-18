@@ -1583,10 +1583,6 @@ pre code {
   margin-right: auto;
   margin-left: auto;
 }
-.gallery {
-  padding-top: 500px;
-  margin-top: 500px;
-}
 @media (min-width: 768px) {
   .container {
     width: 750px;
@@ -4271,8 +4267,8 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   .container-fluid > .navbar-header,
   .container > .navbar-collapse,
   .container-fluid > .navbar-collapse {
-    margin-right: 0;
-    margin-left: 0;
+    margin-right: -50px;
+    margin-left: -50px;
   }
 }
 .navbar-static-top {
@@ -4320,11 +4316,13 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 .navbar-brand > img {
   display: block;
   height: 100%;
+  margin-top: -20px;
 }
 @media (min-width: 768px) {
   .navbar > .container .navbar-brand,
   .navbar > .container-fluid .navbar-brand {
     margin-left: -15px;
+    padding: 0px;
   }
 }
 .navbar-toggle {

@@ -96,10 +96,12 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
-
 h4 {
     color:white;
 }
+
+
+
 
     </style>
 </head>
@@ -110,7 +112,6 @@ h4 {
 </div>
 <nav class="navbar">
     <div class="container">
-        <!-- Brand and toggle get grouped for better mobile display -->
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
@@ -173,6 +174,7 @@ h4 {
 								  	toggle = !toggle;
 								}
 
+
                         </script>
                         <br>
                         <img src="./results/result.jpg" usemap="#workmap" id="myImage" alt="Loading...">
@@ -186,53 +188,7 @@ h4 {
         </div>
     </div>
 </header>
-<header id="baseline">
-    <div class="container">
-        <div class="table">
-            <div class="header-text">
-                <div class="row">
-                    <div class="col-md-12 text-center">
-                        <img src="./results/baseline.jpg" id="baseline">
 
-                        <script>
-								setInterval(function() {
-									var myImageElement = document.getElementById('baseline');
-									myImageElement.src = './results/baseline.jpg?rand=' + Math.random();
-								}, 2000);
-
-                        </script>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</header>
-<header id="timelapse">
-    <div class="container">
-        <div class="table">
-            <div class="header-text">
-                <div class="row">
-                    <div class="col-md-12 text-center">
-                        <video width="1000" height="500" id="vid1" controls>
-                            <source src="./results/timelapse.webm"
-                                    type="video/webm">
-                            <source src="./results/timelapse.mp4"
-                                    type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-
-                        <script>
-								document.getElementById('vid1').addEventListener('loadedmetadata', function() {
-								  this.currentTime = 10;
-								}, false);
-
-                        </script>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</header>
 <!-- Holder for mobile navigation -->
 <div class="mobile-nav">
     <ul>

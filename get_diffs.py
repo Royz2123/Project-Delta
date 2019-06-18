@@ -27,25 +27,50 @@ def create_video(path):
     clip.write_videofile("./results/timelapse.webm")
 
 
-def update_gallery(path=None, index=0):
+def update_gallery(path=None, day_index=0, hour_index=0):
     SAMPLES = 12
-
     if path is None:
         path = "sessions/" + max(os.listdir("sessions/")) + "/"
 
-    s = "<ul class='gallery'>"
-    for i in range(len(os.listdir(path)) // SAMPLES + 1):
-        if i == index:
-            s += '<li><a class="active" href="/gallery.html?num=%d">%d</a></li>' % (i, i)
+    images = sorted(os.listdir(path))
+
+    data = {}
+    for index, image in enumerate(images):
+        day = "/".join(image.split(".")[0].split("_")[1:3])
+        hour = ":".join(image.split(".")[0].split("_")[3:5])
+
+        if day not in data:
+            data[day] = []
+
+        if index % SAMPLES == 0:
+            data[day].append((hour, index))
+
+    # plot the days
+    s = "<div class='gallerymargin'><ul class='gallery'>"
+    chosen_date = ""
+    for i, date in enumerate(data):
+        if i == day_index:
+            chosen_date = date
+            s += '<li><a class="active" href="/gallery.html?day=%d&hour=%d">%s</a></li>' % (i, hour_index, date)
         else:
-            s += '<li><a href="/gallery.html?num=%d">%d</a></li>' % (i, i)
+            s += '<li><a href="/gallery.html?day=%d&hour=%d">%s</a></li>' % (i, hour_index, date)
+    s += "</ul></div>"
+
+    # plot the hours
+    s += "<ul class='gallery'>"
+    chosen_hour = ""
+    for i, (hour, index) in enumerate(data[chosen_date]):
+        if i == hour_index:
+            chosen_hour = hour
+            s += '<li><a class="active" href="/gallery.html?day=%d&hour=%d">%s</a></li>' % (day_index, i, hour)
+        else:
+            s += '<li><a href="/gallery.html?day=%d&hour=%d">%s</a></li>'% (day_index, i, hour)
     s += "</ul>"
 
+    # plot the images
     s += '<div class="row">\n'
-    for i, file in enumerate(sorted(os.listdir(path))[index * SAMPLES:]):
-        print(file)
-        if i == SAMPLES:
-            break
+    index = dict(data[chosen_date])[chosen_hour]
+    for i, file in enumerate(images[index : index + SAMPLES]):
         if i % 4 == 0:
             if i != 0:
                 s +='</div></div>\n'
