@@ -99,7 +99,9 @@ def run_session(session, viz=False):
         session_path = "sessions/" + session + "/"
 
     # create_video(session_path)
+
     update_gallery(session_path)
+
 
     session_images = [session_path + path for path in sorted(os.listdir(session_path))]
 
@@ -135,8 +137,8 @@ def run_session(session, viz=False):
 
         # update changes
         mask, history = image_processing.update_changes(mask, history, diff)
-        p.add_diff(image_processing.combine_masks(final_mask, mask))
-        period = p.get_period_changes()
+        p.add_diff(image_processing.combine_masks(final_mask, mask),sorted(os.listdir(session_path))[i])
+        period = p.get_period_changes(enable=False)
 
         # Draw all the contours on the map
         output1 = image_processing.draw_changes(baseline, period*image_processing.combine_masks(final_mask, mask))
@@ -156,7 +158,7 @@ def run_session(session, viz=False):
             if k == 27:
                 break
         else:
-            time.sleep(1)
+            time.sleep(0.05)
 
     # output the final differences
     output = cv2.imread(session_images[0])
