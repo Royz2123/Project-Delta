@@ -4,7 +4,7 @@ import time
 import numpy as np
 
 import image_processing
-import moviepy.editor as mp
+# import moviepy.editor as mp
 
 from day_or_night import is_night_mode
 from period_changes import Period
@@ -13,8 +13,8 @@ diff_method = image_processing.DiffMethods.INTERSECT
 
 
 def create_video(path):
-    w, h, d = cv2.imread(path + os.listdir(path)[0]).shape
-    out = cv2.VideoWriter('./results/timelapse.mp4', cv2.VideoWriter_fourcc(*'MP4V'), 7, (h, w))
+    h, w, d = cv2.imread(path + os.listdir(path)[0]).shape
+    out = cv2.VideoWriter('./results/timelapse.mp4', cv2.VideoWriter_fourcc(*'DIVX'), 15, (w, h))
 
     for file in os.listdir(path):
         filepath = path + file
@@ -23,8 +23,10 @@ def create_video(path):
     cv2.destroyAllWindows()
 
     # create webm as well
-    clip = mp.VideoFileClip("./results/timelapse.mp4")
-    clip.write_videofile("./results/timelapse.webm")
+    # clip = mp.VideoFileClip("./results/timelapse.mp4")
+    # clip.write_videofile("./results/timelapse.webm")
+    os.remove("./results/timelapse.webm")
+    os.system("ffmpeg-win64-v4.1 -i ./results/timelapse.mp4 -c:v libvpx-vp9 -crf 30 -b:v 0 -b:a 128k -c:a libopus ./results/timelapse.webm")
 
 
 def update_gallery(path=None, day_index=0, hour_index=0):
@@ -98,7 +100,7 @@ def run_session(session, viz=False):
     else:
         session_path = "sessions/" + session + "/"
 
-    # create_video(session_path)
+    create_video(session_path)
 
     update_gallery(session_path)
 
@@ -169,7 +171,7 @@ def run_session(session, viz=False):
 
 
 if __name__ == "__main__":
-    run_session("outdoor4")
+    run_session("z_outdoor4")
 
 
 """
