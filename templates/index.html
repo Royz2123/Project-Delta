@@ -102,6 +102,7 @@ h4 {
 }
 
 
+
     </style>
 </head>
 
@@ -118,6 +119,7 @@ h4 {
                 window.location.href = '/logout';
             }
         }
+
     </script>
 
 
@@ -162,20 +164,20 @@ h4 {
                         <h4>Latest Image</h4>
 
                         <script>
-								var base = "./results/last.jpg"
+                            var base = "./results/last.jpg"
 
-								setInterval(function() {
-									var myImageElement = document.getElementById('myImage');
-									myImageElement.src = base+ '?rand=' + Math.random();
-								}, 1000);
-
+                            setInterval(function() {
+                                var myImageElement = document.getElementById('myImage');
+                                myImageElement.src = base+ '?rand=' + Math.random();
+                            }, 1000);
 
                         </script>
                         <br>
-                        <img width="100%" src="./results/last.jpg" usemap="#workmap" id="myImage" alt="No Images yet...">
+                        <img width="100%" src="./results/last.jpg" usemap="#workmap" id="myImage"
+                             alt="No Images yet...">
 
                         <!--<map name="workmap">-->
-                            <!--<area shape="rect" coords="34,44,270,350" alt="Change" href="#timelapse">-->
+                        <!--<area shape="rect" coords="34,44,270,350" alt="Change" href="#timelapse">-->
                         <!--</map>-->
                     </div>
                 </div>
@@ -190,14 +192,18 @@ h4 {
                 <div class="row">
                     <div class="col-md-12 text-center">
                         <h4>Baseline - First Image</h4>
-                        <img width="100%" src="./results/baseline.jpg" id="baseline" alt="No Images yet...">
 
                         <script>
 								setInterval(function() {
 									var myImageElement = document.getElementById('baseline');
 									myImageElement.src = './results/baseline.jpg?rand=' + Math.random();
-								}, 2000);
+									console.log("Hello");
+								}, 1000);
+
                         </script>
+
+                        <img width="100%" src="./results/baseline.jpg" id="baseline" alt="No Images yet...">
+
                     </div>
                 </div>
             </div>
@@ -225,12 +231,14 @@ h4 {
 									myImageElement.src = './results/timelapse.webm?rand=' + Math.random();
 									console.log("Updated video");
 								}, 2000);
+
                         </script>
 
                         <script>
 								document.getElementById('vid1').addEventListener('loadedmetadata', function() {
 								  this.currentTime = 0;
 								}, false);
+
                         </script>
                     </div>
                 </div>
