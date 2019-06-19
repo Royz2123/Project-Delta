@@ -106,3 +106,4 @@ venv.bak/
 .mypy_cache/
 *.xml
 .idea/Project-Delta.iml
+flask_server.exe
