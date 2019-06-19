@@ -4,19 +4,41 @@ import cv2
 import os
 import datetime
 from time import gmtime, strftime
+import shutil
 
+import util
 
 def get_curr_time():
     return strftime("%Y_%m_%d_%H_%M_%S", gmtime())
 
 
-WAIT_TIME = 10
-FOLDER_NAME = "sessions/session_" + get_curr_time() + "/"
+WAIT_TIME = 180
+FOLDER_NAME = "./sessions/current_session/"
+RESULTS_NAME = "./results/"
+
+
+def clean_up():
+    # remove session
+    for file in os.listdir(FOLDER_NAME):
+        os.remove(os.path.join(FOLDER_NAME, file))
+
+    # remove results
+    for file in os.listdir(RESULTS_NAME):
+        os.remove(os.path.join(RESULTS_NAME, file))
+
+    # remove credentials
+    util.set_creds("", "")
 
 
 def main():
-    os.mkdir(FOLDER_NAME)
     while True:
+        creds = util.get_creds()
+
+        if creds[0] == "":
+            print("No login")
+            time.sleep(3)
+            continue
+
         curr_im = camera_api.get_snapshot()
         cv2.imwrite(FOLDER_NAME + get_curr_time() + ".jpg", curr_im)
         print("Took screenshot")

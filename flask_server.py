@@ -7,6 +7,9 @@ import time
 import logging
 import camera_selenium
 import sys
+import util
+
+import create_session
 
 logging.basicConfig(level=logging.CRITICAL)
 app = Flask(__name__)
@@ -22,8 +25,7 @@ def home():
 
 @app.route('/login', methods=['POST'])
 def do_admin_login():
-    camera_selenium.username = request.form['username']
-    camera_selenium.password = request.form['password']
+    util.set_creds(request.form['username'], request.form['password'])
     session['logged_in'] = True
     return home()
 
@@ -31,6 +33,7 @@ def do_admin_login():
 @app.route("/logout")
 def logout():
     session['logged_in'] = False
+    create_session.clean_up()
     return home()
 
 
@@ -66,14 +69,17 @@ def send_session(path):
 
 @app.route('/<path:path>')
 def send_template(path):
-    if path == "gallery.html":
-        try:
-            day_index = int(request.args.get('day'))
-            hour_index = int(request.args.get('hour'))
-            get_diffs.update_gallery(day_index=day_index, hour_index=hour_index)
-        except Exception as e:
-            print(e)
-    return send_from_directory('templates', path)
+    if not session.get('logged_in'):
+        return render_template('login.html')
+    else:
+        if path == "gallery.html":
+            try:
+                day_index = int(request.args.get('day'))
+                hour_index = int(request.args.get('hour'))
+                get_diffs.update_gallery(day_index=day_index, hour_index=hour_index)
+            except Exception as e:
+                print("Couldn't update gallery")
+        return send_from_directory('templates', path)
 
 """
 @app.route('/gallery.html', methods=['GET'])
@@ -92,9 +98,12 @@ def gallery():
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
 
-    threading.Thread(target=app.run, args=('0.0.0.0', 4000, False)).start()
-    threading.Thread(target=get_diffs.run_session, args=("z_outdoor4", False)).start()
-    # threading.Thread(target=create_session.main).start()
+    # clean leftovers from last time
+    create_session.clean_up()
+
+    threading.Thread(target=app.run, args=('0.0.0.0', 8080, False)).start()
+    threading.Thread(target=create_session.main).start()
+    threading.Thread(target=get_diffs.run_session).start()
 
     while True:
         time.sleep(2)

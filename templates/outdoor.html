@@ -109,6 +109,8 @@ h4 {
     <img src="img/loader.gif" alt="Preloader image">
 </div>
 <nav class="navbar">
+
+
     <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -126,13 +128,14 @@ h4 {
             <ul class="nav navbar-nav navbar-left main-nav">
                 <li><a class="navbar-brand" href="#"><img src="img/logo.jpeg" height="100px" width="150px"
                                                           data-active-url="img/logo.jpeg" alt=""></a></li>
-                <li><a href="/index.html">Home</a></li>
-                <li><a href="/index.html#baseline">Baseline</a></li>
-                <li><a href="/index.html#timelapse">Timelapse</a></li>
-                <li><a href="/indoor.html">Indoor Mode</a></li>
-                <li><a href="/outdoor.html">Outdoor Mode</a></li>
-                <li><a href="/gallery.html">Gallery</a></li>
-                <li><a href="/workspace.html">Workspace</a></li>
+                <li><a href="javascript:getPage('/index.html')">Home</a></li>
+                <li><a href="javascript:getPage('/index.html#baseline')">Baseline</a></li>
+                <li><a href="javascript:getPage('/index.html#timelapse')">Timelapse</a></li>
+                <li><a href="javascript:getPage('/indoor.html')">Indoor Changes</a></li>
+                <li><a href="javascript:getPage('/gallery.html')">Gallery</a></li>
+                <li><a href="javascript:getPage('/workspace.html')">Workspace</a></li>
+                <li><a href="javascript:onLogout()">Logout</a></li>
+
             </ul>
         </div>
         <!-- /.navbar-collapse -->
@@ -200,6 +203,8 @@ h4 {
 <script src="js/typewriter.js"></script>
 <script src="js/jquery.onepagenav.js"></script>
 <script src="js/main.js"></script>
+<script src="js/my_script.js"></script>
+
 </body>
 
 </html>
