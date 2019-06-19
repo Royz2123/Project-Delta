@@ -172,7 +172,7 @@ h4 {
 
                         </script>
                         <br>
-                        <img src="./results/last.jpg" usemap="#workmap" id="myImage" alt="No Images yet...">
+                        <img width="100%" src="./results/last.jpg" usemap="#workmap" id="myImage" alt="No Images yet...">
 
                         <!--<map name="workmap">-->
                             <!--<area shape="rect" coords="34,44,270,350" alt="Change" href="#timelapse">-->
@@ -190,15 +190,13 @@ h4 {
                 <div class="row">
                     <div class="col-md-12 text-center">
                         <h4>Baseline - First Image</h4>
-                        <img src="./results/baseline.jpg" id="baseline" alt="No Images yet...">
+                        <img width="100%" src="./results/baseline.jpg" id="baseline" alt="No Images yet...">
 
                         <script>
 								setInterval(function() {
 									var myImageElement = document.getElementById('baseline');
 									myImageElement.src = './results/baseline.jpg?rand=' + Math.random();
 								}, 2000);
-
-
                         </script>
                     </div>
                 </div>
@@ -213,8 +211,8 @@ h4 {
                 <div class="row">
                     <div class="col-md-12 text-center">
                         <h4>Timelapse</h4>
-                        <video width="1000" height="500" id="vid1" controls>
-                            <source src="./results/timelapse.webm"
+                        <video width="100%" id="vid1" controls>
+                            <source id="myvideo" src="./results/timelapse.webm"
                                     type="video/webm">
                             <source src="./results/timelapse.mp4"
                                     type="video/mp4">
@@ -222,11 +220,17 @@ h4 {
                         </video>
 
                         <script>
+								setInterval(function() {
+									var myImageElement = document.getElementById('myvideo');
+									myImageElement.src = './results/timelapse.webm?rand=' + Math.random();
+									console.log("Updated video");
+								}, 2000);
+                        </script>
+
+                        <script>
 								document.getElementById('vid1').addEventListener('loadedmetadata', function() {
-								  this.currentTime = 10;
+								  this.currentTime = 0;
 								}, false);
-
-
                         </script>
                     </div>
                 </div>

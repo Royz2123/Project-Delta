@@ -11,8 +11,11 @@ import util
 
 import create_session
 
-logging.basicConfig(level=logging.CRITICAL)
+logging.basicConfig(level=logging.INFO)
 app = Flask(__name__)
+
+day_index = 0
+hour_index = 0
 
 
 @app.route('/')
@@ -73,12 +76,15 @@ def send_template(path):
         return render_template('login.html')
     else:
         if path == "gallery.html":
+            global day_index
+            global hour_index
             try:
                 day_index = int(request.args.get('day'))
                 hour_index = int(request.args.get('hour'))
                 get_diffs.update_gallery(day_index=day_index, hour_index=hour_index)
             except Exception as e:
-                print("Couldn't update gallery")
+                pass
+
         return send_from_directory('templates', path)
 
 """

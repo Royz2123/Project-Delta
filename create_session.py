@@ -12,7 +12,7 @@ def get_curr_time():
     return strftime("%Y_%m_%d_%H_%M_%S", gmtime())
 
 
-WAIT_TIME = 180
+WAIT_TIME = 1
 FOLDER_NAME = "./sessions/current_session/"
 RESULTS_NAME = "./results/"
 

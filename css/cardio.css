@@ -113,9 +113,8 @@ header {
 	position: relative;
 	width: 100%;
 	color: white;
-	background: rgba(28, 36, 65, 0.93);
-	background: url('../img/header.jpg');
-	background-size: cover;
+	background: rgba(28, 36, 65);
+	background-size: 10000px;
 }
 
 header .table {

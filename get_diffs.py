@@ -39,6 +39,9 @@ def update_gallery(path="./sessions/current_session/", day_index=0, hour_index=0
     SAMPLES = 12
     images = sorted(os.listdir(path))
 
+    if not len(images):
+        return
+
     data = {}
     for index, image in enumerate(images):
         day = "/".join(image.split(".")[0].split("_")[1:3])
