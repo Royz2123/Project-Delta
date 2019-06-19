@@ -34,6 +34,13 @@
     <link rel="stylesheet" type="text/css" href="fonts/eleganticons/et-icons.css">
     <!-- Main style -->
     <link rel="stylesheet" type="text/css" href="css/cardio.css">
+
+    <style>
+        h4 {
+            color:white;
+           }
+
+    </style>
 </head>
 
 <body>
@@ -41,6 +48,17 @@
     <img src="img/loader.gif" alt="Preloader image">
 </div>
 <nav class="navbar">
+    <script>
+        function onLogout() {
+            var userselection = confirm("Caution! Logging out deletes all of your photos and videos!");
+
+            if (userselection == true){
+                window.location.href = '/logout';
+            }
+        }
+    </script>
+
+
     <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -61,10 +79,11 @@
                 <li><a href="/index.html">Home</a></li>
                 <li><a href="/index.html#baseline">Baseline</a></li>
                 <li><a href="/index.html#timelapse">Timelapse</a></li>
-                <li><a href="/indoor.html">Indoor Mode</a></li>
-                <li><a href="/outdoor.html">Outdoor Mode</a></li>
+                <li><a href="/indoor.html">Indoor Changes</a></li>
                 <li><a href="/gallery.html">Gallery</a></li>
-                <li><a href="/workspace.html">Workspace</a></li>
+                <li><a href="/workspace.html">Workspace</a>
+                <li><a href="javascript:onLogout()">Logout</a></li>
+
             </ul>
         </div>
         <!-- /.navbar-collapse -->
@@ -77,6 +96,7 @@
             <div class="header-text">
                 <div class="row">
                     <div class="col-md-12 text-center">
+                        <h4>Workspace</h4>
                         <img src="./results/baseline.jpg" onclick="myFunction()" usemap="#workmap" id="myImage"
                              alt="Server is Down">
 
@@ -90,6 +110,7 @@
                                     }
                                     first = !first;
                                 }
+
 
 
                         </script>
@@ -114,6 +135,8 @@
 <script src="js/typewriter.js"></script>
 <script src="js/jquery.onepagenav.js"></script>
 <script src="js/main.js"></script>
+<script src="js/my_script.js"></script>
+
 </body>
 
 </html>

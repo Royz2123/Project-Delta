@@ -8,8 +8,10 @@ import moviepy.editor as mp
 
 from day_or_night import is_night_mode
 from period_changes import Period
+import create_session
 
-diff_method = image_processing.DiffMethods.INTERSECT
+diff_method = image_processing.DiffMethods.INDOOR
+TIMELAPSE_SECONDS = 3600
 
 
 def create_video(path):
@@ -29,9 +31,6 @@ def create_video(path):
 
 def update_gallery(path=None, day_index=0, hour_index=0):
     SAMPLES = 12
-    if path is None:
-        path = "sessions/" + max(os.listdir("sessions/")) + "/"
-
     images = sorted(os.listdir(path))
 
     data = {}
@@ -90,7 +89,94 @@ def update_gallery(path=None, day_index=0, hour_index=0):
         fileobj.write("<!--EYECATCHER-->".join(lst))
 
 
-def run_session(session, viz=False):
+def run_session(viz=False):
+    while True:
+        try:
+            run_session_try(viz)
+        except Exception as e:
+            print(e)
+
+
+def run_session_try(viz=False):
+    session_path = "./sessions/current_session/"
+
+    while True:
+        if len(os.listdir(session_path)):
+            create_video(session_path)
+            last_video = time.time()
+
+            # create important databases
+            min_path = min(os.listdir(session_path))
+            min_path = os.path.join(session_path, min_path)
+
+            baseline = cv2.imread(min_path)
+            cv2.imwrite("./results/baseline.jpg", baseline)
+            break
+
+        else:
+            print("No images yet")
+            time.sleep(2)
+
+    mask, history = image_processing.create_changes_dbs(baseline)
+    final_mask = mask.copy()
+    baseline_index = 0
+
+    p = Period()
+
+    while True:
+        time.sleep(1)
+        update_gallery(session_path)
+
+        max_path = max(os.listdir(session_path))
+        min_path = min(os.listdir(session_path))
+        max_path = os.path.join(session_path, max_path)
+        min_path = os.path.join(session_path, min_path)
+
+        if time.time() - last_video > TIMELAPSE_SECONDS:
+            print("Creating Timelapse, Pausing Program")
+            create_video(session_path)
+
+        baseline = cv2.imread(min_path)
+        cv2.imwrite("./results/baseline.jpg", baseline)
+
+        im = cv2.imread(max_path)
+        orig = im.copy()
+
+        diff = diff_method(baseline, im)
+
+        # update changes
+        mask, history = image_processing.update_changes(mask, history, diff)
+        p.add_diff(image_processing.combine_masks(final_mask, mask), max_path)
+        period = p.get_period_changes(enable=False)
+
+        # Draw all the contours on the map
+        output1 = image_processing.draw_changes(baseline, period*image_processing.combine_masks(final_mask, mask))
+        output2 = image_processing.draw_changes(im, period*image_processing.combine_masks(final_mask, mask))
+
+        cv2.imwrite("results/result.jpg", output2)
+        cv2.imwrite("results/last.jpg", orig)
+
+        if viz:
+            # cv2.imshow("Difference ", output1)
+            # k = cv2.waitKey(300) & 0xff
+            # if k == 27:
+            #     break
+            cv2.imshow("Difference ", output2)
+            k = cv2.waitKey(image_processing.IMAGE_SHOW_DELAY) & 0xff
+            if k == 27:
+                break
+        else:
+            time.sleep(0.05)
+
+    # output the final differences
+    # output = cv2.imread(session_images[0])
+    # output = image_processing.draw_changes(output, image_processing.combine_masks(final_mask, mask))
+    # cv2.imwrite("demos/final.jpg", output)
+    #cv2.imshow("Output", output)
+    #cv2.waitKey(0)
+
+
+def run_session_old(session, viz=False):
     print(viz)
     # Choose session (latest vs. specific)
     if session is None:
@@ -98,7 +184,8 @@ def run_session(session, viz=False):
     else:
         session_path = "sessions/" + session + "/"
 
-    # create_video(session_path)
+    create_video(session_path)
+    last_video = time.time()
 
     update_gallery(session_path)
 
@@ -116,6 +203,10 @@ def run_session(session, viz=False):
     p = Period()
 
     for i in range(1, len(session_images)):
+        if time.time() - last_video > TIMELAPSE_SECONDS:
+            print("Creating Timelapse, Pausing Program")
+            create_video(session_path)
+
         baseline = cv2.imread(session_images[baseline_index])
         im = cv2.imread(session_images[i])
         orig = im.copy()
@@ -161,11 +252,12 @@ def run_session(session, viz=False):
             time.sleep(0.05)
 
     # output the final differences
-    output = cv2.imread(session_images[0])
-    output = image_processing.draw_changes(output, image_processing.combine_masks(final_mask, mask))
-    cv2.imwrite("demos/final.jpg", output)
+    # output = cv2.imread(session_images[0])
+    # output = image_processing.draw_changes(output, image_processing.combine_masks(final_mask, mask))
+    # cv2.imwrite("demos/final.jpg", output)
     #cv2.imshow("Output", output)
     #cv2.waitKey(0)
+
 
 
 if __name__ == "__main__":

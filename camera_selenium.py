@@ -6,13 +6,16 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 
 import time
+import util
 
-username = "royzohar25@gmail.com"
-password = "1Qazwsxdcv"
+
+# username = "royzohar25@gmail.com"
+# password = "1Qazwsxdcv"
 
 FIRST = "https://my.arlo.com/?_ga=2.72087187.1057132506.1558461222-1738443716.1558191218#/login"
 
 def get_url_selenium():
+	username, password = util.get_creds()
 	url = None
 	try:
 		profile = webdriver.FirefoxProfile()
@@ -86,17 +89,17 @@ def get_url_selenium():
 				"//div[@id='day_record_1']//div[@class='timeline-record-footer']//div[@class='timeline-record-more arlo-cp']"
 			).click()
 
-			url = driver.find_element_by_xpath(
+			driver.find_element_by_xpath(
 				"//div[@class='timeline-action arlo-link'][5]"
 			).click()
 
-			url = driver.find_element_by_xpath(
+			driver.find_element_by_xpath(
 				"//button[@id='buttonConfirm']"
 			).click()
 		except Exception as e:
 			print("Failed deleting previous image: ", e)
 
-		time.sleep(20)
+		print(url)
 	except Exception as e:
 		print(e)
 	finally:

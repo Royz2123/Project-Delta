@@ -2,8 +2,7 @@ from arlo import Arlo
 import cv2
 import camera_selenium
 
-arlo = Arlo("royzohar25@gmail.com", "1Qazwsxdcv")
-
+import util
 
 def old_setup():
     # Get the list of devices and filter on device type to only get the camera.
@@ -19,6 +18,11 @@ def get_snapshot():
     while True:
         try:
             snapshot_url = camera_selenium.get_url_selenium()
+            print(snapshot_url)
+
+            username, password = util.get_creds()
+            print(username)
+            arlo = Arlo(username, password)
 
             arlo.DownloadSnapshot(snapshot_url, 'temp.jpg')
             img = cv2.imread('temp.jpg')

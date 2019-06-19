@@ -20,7 +20,7 @@ INF = 100000
 # BACK_SUB = cv2.createBackgroundSubtractorMOG2()
 # BACK_SUB = cv2.bgsegm.createBackgroundSubtractorGMG(4, 0.8)
 
-BACK_SUB1 = cv2.bgsegm.createBackgroundSubtractorLSBP(minCount=1, LSBPthreshold=10, Tlower=10, Tupper=20)
+BACK_SUB1 = cv2.createBackgroundSubtractorMOG2(detectShadows=True, history=1)
 BACK_SUB2 = cv2.bgsegm.createBackgroundSubtractorMOG(history=10000, nmixtures = 5, backgroundRatio = 0.6, noiseSigma = 0)
 BACK_SUB3 = cv2.bgsegm.createBackgroundSubtractorGSOC(replaceRate=0.05, propagationRate=0.0001, alpha=0.05, beta=0.05)
 
@@ -28,6 +28,33 @@ EDGE_THICKNESS = 6
 
 # Diff methods get 2 images as input, and output the diff matrix
 
+
+def diff_background_sub_1(im1, im2):
+    im2 = cv2.cvtColor(im2, cv2.COLOR_BGR2GRAY)
+    # im2 = cv2.equalizeHist(im2)
+    im2 = cv2.GaussianBlur(im2, (5, 5), 0)
+    fgmask = BACK_SUB1.apply(im2, learningRate=LEARNING_RATE)
+
+    kernel = np.ones((EDGE_THICKNESS, EDGE_THICKNESS), np.uint8)
+    fgmask = cv2.dilate(fgmask, kernel)
+
+    cv2.imshow("Difference 2", fgmask)
+
+    # k = cv2.waitKey(300) & 0xff
+
+    fgmask[fgmask <= 200] = 0
+    fgmask[fgmask > 200] = 1
+    return fgmask
+
+
+def indoor_backsub(im1, im2):
+    global BACK_SUB1
+    BACK_SUB1 = cv2.createBackgroundSubtractorMOG2(detectShadows=True, history=1)
+
+    for i in range(10):
+        diff_background_sub_1(im1, im1)
+    diff = diff_background_sub_1(im1, im2)
+    return diff
 
 def diff_edges(im1, im2):
     edges1 = cv2.Canny(im1, 100, 200)
@@ -286,6 +313,7 @@ class DiffMethods(Enum):
     HOG = diff_hog
     SSIM = diff_ssim
     INTERSECT = intersectMethods
+    INDOOR = indoor_backsub
 def get_method_name(method):
     return str(method).split(" ")[1]
 

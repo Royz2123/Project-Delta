@@ -7,6 +7,9 @@ import time
 import logging
 import camera_selenium
 import sys
+import util
+
+import create_session
 
 logging.basicConfig(level=logging.CRITICAL)
 app = Flask(__name__)
@@ -22,8 +25,7 @@ def home():
 
 @app.route('/login', methods=['POST'])
 def do_admin_login():
-    camera_selenium.username = request.form['username']
-    camera_selenium.password = request.form['password']
+    util.set_creds(request.form['username'], request.form['password'])
     session['logged_in'] = True
     return home()
 
@@ -31,6 +33,7 @@ def do_admin_login():
 @app.route("/logout")
 def logout():
     session['logged_in'] = False
+    create_session.clean_up()
     return home()
 
 
@@ -92,9 +95,12 @@ def gallery():
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
 
-    threading.Thread(target=app.run, args=('0.0.0.0', 4000, False)).start()
-    threading.Thread(target=get_diffs.run_session, args=("z_outdoor4", False)).start()
-    # threading.Thread(target=create_session.main).start()
+    # clean leftovers from last time
+    create_session.clean_up()
+
+    threading.Thread(target=app.run, args=('0.0.0.0', 8080, False)).start()
+    threading.Thread(target=create_session.main).start()
+    threading.Thread(target=get_diffs.run_session).start()
 
     while True:
         time.sleep(2)
