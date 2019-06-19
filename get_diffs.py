@@ -28,7 +28,10 @@ def create_video(path):
     # create webm as well
     # clip = mp.VideoFileClip("./results/timelapse.mp4")
     # clip.write_videofile("./results/timelapse.webm")
-    os.remove("./results/timelapse.webm")
+    try:
+        os.remove("./results/timelapse.webm")
+    except:
+        pass
     os.system("ffmpeg-win64-v4.1 -i ./results/timelapse.mp4 -c:v libvpx-vp9 -crf 30 -b:v 0 -b:a 128k -c:a libopus ./results/timelapse.webm")
 
 
