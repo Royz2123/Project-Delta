@@ -7,5 +7,12 @@ function onLogout() {
 }
 
 function getPage(page) {
-    window.location.href = page + '?rand=' + Math.random();
+    console.log(window.location.href);
+    sep = page.split("#", 2);
+    console.log(sep);
+    if (sep.length == 1) {
+        window.location.href = page + '?rand=' + Math.random();
+    } else {
+        window.location.href = page;
+    }
 }

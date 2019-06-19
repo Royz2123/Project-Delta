@@ -69,14 +69,17 @@ def send_session(path):
 
 @app.route('/<path:path>')
 def send_template(path):
-    if path == "gallery.html":
-        try:
-            day_index = int(request.args.get('day'))
-            hour_index = int(request.args.get('hour'))
-            get_diffs.update_gallery(day_index=day_index, hour_index=hour_index)
-        except Exception as e:
-            print(e)
-    return send_from_directory('templates', path)
+    if not session.get('logged_in'):
+        return render_template('login.html')
+    else:
+        if path == "gallery.html":
+            try:
+                day_index = int(request.args.get('day'))
+                hour_index = int(request.args.get('hour'))
+                get_diffs.update_gallery(day_index=day_index, hour_index=hour_index)
+            except Exception as e:
+                print("Couldn't update gallery")
+        return send_from_directory('templates', path)
 
 """
 @app.route('/gallery.html', methods=['GET'])
