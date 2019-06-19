@@ -21,9 +21,9 @@ def get_url_selenium():
 		profile = webdriver.FirefoxProfile()
 		profile.set_preference("plugin.state.flash", 2)
 		driver = webdriver.Firefox(profile)
-		print("There is a way to wait until an item loads, \
-		look it up and use it intead of the time.sleep() - \
-		it will shorten the waiting time and avoid errors.")
+		#print("There is a way to wait until an item loads, \
+		#look it up and use it intead of the time.sleep() - \
+		#it will shorten the waiting time and avoid errors.")
 		driver.get(FIRST)
 		elem = driver.find_element_by_name("userId")
 		elem.send_keys(username)
@@ -65,7 +65,7 @@ def get_url_selenium():
 				"//div[@class='alert-body alert-body-visible']"
 			).click()
 		except Exception as e:
-			print(e)
+			pass
 
 		elem = driver.find_element_by_id("footer_library")
 		elem.click()
@@ -76,7 +76,7 @@ def get_url_selenium():
 			elem = driver.find_element_by_id("modal_close")
 			elem.click()
 		except Exception as e:
-			print(e)
+			pass
 
 		# Get image url
 		url = driver.find_element_by_xpath(
@@ -97,11 +97,12 @@ def get_url_selenium():
 				"//button[@id='buttonConfirm']"
 			).click()
 		except Exception as e:
-			print("Failed deleting previous image: ", e)
+			pass
+			# print("Failed deleting previous image: ", e)
 
-		print(url)
 	except Exception as e:
-		print(e)
+		pass
+		# print(e)
 	finally:
 		driver.close()
 		driver.quit()

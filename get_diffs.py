@@ -125,7 +125,7 @@ def run_session_try(viz=False):
             break
 
         else:
-            print("No images yet")
+            # print("No images yet")
             time.sleep(2)
 
     mask, history = image_processing.create_changes_dbs(baseline)
@@ -144,7 +144,7 @@ def run_session_try(viz=False):
         min_path = os.path.join(session_path, min_path)
 
         if time.time() - last_video > TIMELAPSE_SECONDS:
-            print("Creating Timelapse, Pausing Program")
+            # print("Creating Timelapse, Pausing Program")
             create_video(session_path)
             last_video = time.time()
 
@@ -215,7 +215,7 @@ def run_session_old(session, viz=False):
 
     for i in range(1, len(session_images)):
         if time.time() - last_video > TIMELAPSE_SECONDS:
-            print("Creating Timelapse, Pausing Program")
+            # print("Creating Timelapse, Pausing Program")
             create_video(session_path)
 
         baseline = cv2.imread(session_images[baseline_index])

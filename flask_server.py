@@ -11,7 +11,7 @@ import util
 
 import create_session
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.CRITICAL)
 app = Flask(__name__)
 
 day_index = 0

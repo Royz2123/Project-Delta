@@ -35,13 +35,13 @@ def main():
         creds = util.get_creds()
 
         if creds[0] == "":
-            print("No login")
+            # print("No login")
             time.sleep(3)
             continue
 
         curr_im = camera_api.get_snapshot()
         cv2.imwrite(FOLDER_NAME + get_curr_time() + ".jpg", curr_im)
-        print("Took screenshot")
+        # print("Took screenshot")
 
         # wait between images
         time.sleep(WAIT_TIME)

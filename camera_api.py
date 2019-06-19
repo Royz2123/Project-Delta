@@ -11,17 +11,17 @@ def old_setup():
 
     basestations = cameras
 
-    print("Connected to Camera successfully")
+    # print("Connected to Camera successfully")
 
 
 def get_snapshot():
     while True:
         try:
             snapshot_url = camera_selenium.get_url_selenium()
-            print(snapshot_url)
+            # print(snapshot_url)
 
             username, password = util.get_creds()
-            print(username)
+            # print(username)
             arlo = Arlo(username, password)
 
             arlo.DownloadSnapshot(snapshot_url, 'temp.jpg')
@@ -46,7 +46,7 @@ def get_snapshot2():
         if snapshot_url is not None:
             break
 
-    print(snapshot_url)
+    # print(snapshot_url)
 
     arlo.DownloadSnapshot(snapshot_url, 'temp.jpg')
     img = cv2.imread('temp.jpg')
