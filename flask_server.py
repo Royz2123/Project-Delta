@@ -81,9 +81,9 @@ def send_template(path):
             try:
                 day_index = int(request.args.get('day'))
                 hour_index = int(request.args.get('hour'))
-                get_diffs.update_gallery(day_index=day_index, hour_index=hour_index)
             except Exception as e:
                 pass
+            get_diffs.update_gallery(day_index=day_index, hour_index=hour_index)
 
         return send_from_directory('templates', path)
 
